@@ -56,9 +56,21 @@ public class BoardController {
         return board;
     }
 
-    @PutMapping("/{id}/pw/{password}")
-    public HashMap<String, String> updateBoard(@PathVariable Long id, @PathVariable String password, @RequestBody BoardRequestDto requestDto) {
-        return getJsonFormat(boardService.updateBoard(id, password, requestDto));
+    @PutMapping("/{id}")
+    public HashMap<String, String> updateBoard(@PathVariable Long id, @RequestBody BoardRequestDto requestDto) {
+        return getJsonFormat(boardService.updateBoard(id, requestDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public HashMap<String, String> deleteBoard(@PathVariable Long id, @RequestBody BoardRequestDto requestDto) {
+        HashMap<String, String> map = new HashMap<>();
+
+        if (boardService.deleteBoard(id, requestDto) != 0) {
+            map.put("message", "성공");
+        } else {
+            map.put("message", "실패");
+        }
+        return map;
     }
 
     private HashMap<String, String> getJsonFormat(BoardResponseDto boardResponseDto) {

@@ -49,10 +49,10 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponseDto updateBoard(Long id, String password, BoardRequestDto requestDto) {
+    public BoardResponseDto updateBoard(Long id, BoardRequestDto requestDto) {
         Board board = findBoard(id);
 
-        if (requestDto.getPassword().equals(password)) {
+        if (board.getPassword().equals(requestDto.getPassword())) {
             board.update(requestDto);
         } else {
             // 안맞으면 변경안함.
@@ -61,6 +61,19 @@ public class BoardService {
         BoardResponseDto boardResponseDto = new BoardResponseDto(board);
 
         return boardResponseDto;
+    }
+
+    public Long deleteBoard(Long id, BoardRequestDto requestDto) {
+        Board board = findBoard(id);
+
+        if (board.getPassword().equals(requestDto.getPassword())) {
+            boardRepository.delete(board);
+
+            return id;
+        } else {
+            return 0L;
+        }
+
     }
 
     private Board findBoard(Long id) {
