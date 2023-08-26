@@ -6,6 +6,8 @@ import com.sparta.springboottest.entity.Board;
 import com.sparta.springboottest.repository.BoardRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class BoardService {
     private final BoardRepository boardRepository;
@@ -24,4 +26,7 @@ public class BoardService {
         return boardResponseDto;
     }
 
+    public List<BoardResponseDto> getBoard() {
+        return boardRepository.findAllByOrderByModifiedTimeDesc().stream().map(BoardResponseDto::new).toList();
+    }
 }
