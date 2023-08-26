@@ -5,6 +5,7 @@ import com.sparta.springboottest.dto.BoardResponseDto;
 import com.sparta.springboottest.service.BoardService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,29 @@ public class BoardController {
         return board;
     }
 
+    @GetMapping("/search/title/{title}")
+    public List<BoardResponseDto> getBoardTitle(@PathVariable String title) {
+        List<BoardResponseDto> board = boardService.getBoardTitle(title);
+        return board;
+    }
+
+    @GetMapping("/search/username/{username}")
+    public List<BoardResponseDto> getBoardUsername(@PathVariable String username) {
+        List<BoardResponseDto> board = boardService.getBoardUsername(username);
+        return board;
+    }
+
+    @GetMapping("/search/contents/{contents}")
+    public List<BoardResponseDto> getBoardContents(@PathVariable String contents) {
+        List<BoardResponseDto> board = boardService.getBoardContents(contents);
+        return board;
+    }
+
+    @GetMapping("/search/modifiedTime/{modifiedTime}")
+    public List<BoardResponseDto> getBoardModifiedTime(@PathVariable LocalDateTime modifiedTime) {
+        List<BoardResponseDto> board = boardService.getBoardModifiedTime(modifiedTime);
+        return board;
+    }
 
     private HashMap<String, String> getJsonFormat(BoardResponseDto boardResponseDto) {
         BoardResponseDto board = boardResponseDto;
