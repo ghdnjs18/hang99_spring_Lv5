@@ -20,40 +20,19 @@ public class BoardController {
         this.boardService = boardService;
     }
 
-    @PostMapping("/create")
+    @PostMapping("/")
     public HashMap<String, String> createBoard(@RequestBody BoardRequestDto requestDto) {
         return getJsonFormat(boardService.createBoard(requestDto));
     }
 
-    @GetMapping("/search")
-//    private List<HashMap<String, String>> getBoard() {
-    public List<BoardResponseDto> getBoard() {
-        List<BoardResponseDto> board = boardService.getBoard();
-        return board;
+    @GetMapping("/")
+    public List<BoardResponseDto> getBoards() {
+        return boardService.getBoards();
     }
 
-    @GetMapping("/search/title/{title}")
-    public List<BoardResponseDto> getBoardTitle(@PathVariable String title) {
-        List<BoardResponseDto> board = boardService.getBoardTitle(title);
-        return board;
-    }
-
-    @GetMapping("/search/username/{username}")
-    public List<BoardResponseDto> getBoardUsername(@PathVariable String username) {
-        List<BoardResponseDto> board = boardService.getBoardUsername(username);
-        return board;
-    }
-
-    @GetMapping("/search/contents/{contents}")
-    public List<BoardResponseDto> getBoardContents(@PathVariable String contents) {
-        List<BoardResponseDto> board = boardService.getBoardContents(contents);
-        return board;
-    }
-
-    @GetMapping("/search/modifiedTime/{modifiedTime}")
-    public List<BoardResponseDto> getBoardModifiedTime(@PathVariable LocalDateTime modifiedTime) {
-        List<BoardResponseDto> board = boardService.getBoardModifiedTime(modifiedTime);
-        return board;
+    @GetMapping("/{id}")
+    public BoardResponseDto getBoard(@PathVariable Long id) {
+        return boardService.getBoard(id);
     }
 
     @PutMapping("/{id}")
@@ -66,9 +45,9 @@ public class BoardController {
         HashMap<String, String> map = new HashMap<>();
 
         if (boardService.deleteBoard(id, requestDto) != 0) {
-            map.put("message", "성공");
+            map.put("success", "성공");
         } else {
-            map.put("message", "실패");
+            map.put("success", "실패");
         }
         return map;
     }

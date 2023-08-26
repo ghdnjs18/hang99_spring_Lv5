@@ -28,24 +28,15 @@ public class BoardService {
         return boardResponseDto;
     }
 
-    public List<BoardResponseDto> getBoard() {
+    public List<BoardResponseDto> getBoards() {
         return boardRepository.findAllByOrderByModifiedTimeDesc().stream().map(BoardResponseDto::new).toList();
     }
 
-    public List<BoardResponseDto> getBoardTitle(String title) {
-        return boardRepository.findAllByTitleContainingOrderByModifiedTimeDesc(title).stream().map(BoardResponseDto::new).toList();
-    }
+    public BoardResponseDto getBoard(Long id) {
+        Board board = findBoard(id);
+        BoardResponseDto boardResponseDto = new BoardResponseDto(board);
 
-    public List<BoardResponseDto> getBoardUsername(String username) {
-        return boardRepository.findAllByUsernameContainingOrderByModifiedTimeDesc(username).stream().map(BoardResponseDto::new).toList();
-    }
-
-    public List<BoardResponseDto> getBoardContents(String contents) {
-        return boardRepository.findAllByContentsContainingOrderByModifiedTimeDesc(contents).stream().map(BoardResponseDto::new).toList();
-    }
-
-    public List<BoardResponseDto> getBoardModifiedTime(LocalDateTime modifiedTime) {
-        return boardRepository.findAllByModifiedTimeBeforeOrderByModifiedTimeDesc(modifiedTime).stream().map(BoardResponseDto::new).toList();
+        return boardResponseDto;
     }
 
     @Transactional
