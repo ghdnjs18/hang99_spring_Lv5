@@ -8,10 +8,4 @@ import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findAllByOrderByModifiedTimeDesc();
-    List<Board> findAllByIdOrderByModifiedTimeDesc(Long id);
-    List<Board> findAllByTitleContainingOrderByModifiedTimeDesc(String title);
-    List<Board> findAllByUsernameContainingOrderByModifiedTimeDesc(String username);
-    List<Board> findAllByContentsContainingOrderByModifiedTimeDesc(String contents);
-    List<Board> findAllByModifiedTimeBeforeOrderByModifiedTimeDesc(LocalDateTime modifiedTime);
-
 }
