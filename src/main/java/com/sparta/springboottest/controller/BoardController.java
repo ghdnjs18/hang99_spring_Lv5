@@ -56,6 +56,11 @@ public class BoardController {
         return board;
     }
 
+    @PutMapping("/{id}/pw/{password}")
+    public HashMap<String, String> updateBoard(@PathVariable Long id, @PathVariable String password, @RequestBody BoardRequestDto requestDto) {
+        return getJsonFormat(boardService.updateBoard(id, password, requestDto));
+    }
+
     private HashMap<String, String> getJsonFormat(BoardResponseDto boardResponseDto) {
         BoardResponseDto board = boardResponseDto;
 
@@ -68,5 +73,4 @@ public class BoardController {
 
         return map;
     }
-
 }

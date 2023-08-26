@@ -5,6 +5,7 @@ import com.sparta.springboottest.dto.BoardResponseDto;
 import com.sparta.springboottest.entity.Board;
 import com.sparta.springboottest.repository.BoardRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,5 +46,26 @@ public class BoardService {
 
     public List<BoardResponseDto> getBoardModifiedTime(LocalDateTime modifiedTime) {
         return boardRepository.findAllByModifiedTimeBeforeOrderByModifiedTimeDesc(modifiedTime).stream().map(BoardResponseDto::new).toList();
+    }
+
+    @Transactional
+    public BoardResponseDto updateBoard(Long id, String password, BoardRequestDto requestDto) {
+        Board board = findBoard(id);
+
+        if (requestDto.getPassword().equals(password)) {
+            board.update(requestDto);
+        } else {
+            // 안맞으면 변경안함.
+            // 그래도 게시글은 반환 하는게 맞는데, 다른 메세지는 어떻게?
+        }
+        BoardResponseDto boardResponseDto = new BoardResponseDto(board);
+
+        return boardResponseDto;
+    }
+
+    private Board findBoard(Long id) {
+        return boardRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("선택한 게시물은 존재하지 않습니다.")
+        );
     }
 }
