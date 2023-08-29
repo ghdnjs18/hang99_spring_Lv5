@@ -42,7 +42,7 @@ public class BoardController {
     public HashMap<String, String> deleteBoard(@PathVariable Long id, @RequestBody BoardRequestDto requestDto) {
         HashMap<String, String> map = new HashMap<>();
 
-        if (boardService.deleteBoard(id, requestDto) != 0) {
+        if (boardService.deleteBoard(id, requestDto)) {
             map.put("success", "성공");
         } else {
             map.put("success", "실패");

@@ -50,15 +50,15 @@ public class BoardService {
         return new BoardResponseDto(board);
     }
 
-    public Long deleteBoard(Long id, BoardRequestDto requestDto) {
+    public Boolean deleteBoard(Long id, BoardRequestDto requestDto) {
         Board board = findBoard(id);
 
         if (board.getPassword().equals(requestDto.getPassword())) {
             boardRepository.delete(board);
 
-            return id;
+            return true;
         } else {
-            return 0L;
+            return false;
         }
 
     }
