@@ -7,6 +7,7 @@ API 명세서
 
 ERD 다이어그램
 
-[![Uploading image.png…]()](https://files.slack.com/files-tmb/T01L2TNGW3T-F05QCTGB9LZ-799761fa97/image_720.png)https://files.slack.com/files-tmb/T01L2TNGW3T-F05QCTGB9LZ-799761fa97/image_720.png
+![Uploading image.png…]()
+
 
 
