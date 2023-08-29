@@ -3,4 +3,5 @@
 
 API 명세서
 
-![image](https://github.com/ghdnjs18/SpringBoot-test/assets/70429434/3f5d8cdd-bbae-4538-898b-bf6d008f76a0)
+![image](https://github.com/ghdnjs18/SpringBoot-test/assets/70429434/9d20af83-6caa-437f-91b2-0e171d92c99d)
+
