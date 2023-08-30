@@ -24,11 +24,9 @@ public class User {
     @NotBlank(message = "비밀번호는 필수 값 입니다.")
     private String password;
 
-    @OneToMany(mappedBy = "user")
-    private List<Board> boards = new ArrayList<>();
-
     public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
+
 }
