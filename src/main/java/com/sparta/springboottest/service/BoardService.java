@@ -32,17 +32,19 @@ public class BoardService {
         return new BoardResponseDto(board);
     }
 
+    @Transactional(readOnly = true)
     public List<BoardResponseDto> getBoards() {
         return boardRepository.findAllByOrderByModifiedTimeDesc().stream().map(BoardResponseDto::new).toList();
     }
 
+    @Transactional(readOnly = true)
     public BoardResponseDto getBoard(Long id) {
         Board board = findBoard(id);
 
         return new BoardResponseDto(board);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public BoardResponseDto updateBoard(Long id, BoardRequestDto requestDto, String tokenValue) {
         Board board = findBoard(id);
         String username = board.getUsername();
@@ -78,7 +80,7 @@ public class BoardService {
         // JWT 토큰 substring
         String token = jwtUtil.substringToken(tokenValue);
         // 토큰 검증
-        if(!jwtUtil.validateToken(token)){
+        if (!jwtUtil.validateToken(token)) {
             throw new IllegalArgumentException("Token Error");
         }
         Claims info = jwtUtil.getUserInfoFromToken(token);
