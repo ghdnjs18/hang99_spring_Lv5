@@ -41,10 +41,6 @@ public class BoardService {
 
         if (board.getPassword().equals(requestDto.getPassword())) {
             board.update(requestDto);
-
-        } else {
-            // 안맞으면 변경안함.
-            // 그래도 게시글은 반환 하는게 맞는데, 다른 메세지는 어떻게?
         }
 
         return new BoardResponseDto(board);
@@ -55,12 +51,10 @@ public class BoardService {
 
         if (board.getPassword().equals(requestDto.getPassword())) {
             boardRepository.delete(board);
-
             return true;
-        } else {
-            return false;
         }
 
+        return false;
     }
 
     private Board findBoard(Long id) {

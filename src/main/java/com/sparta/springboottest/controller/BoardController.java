@@ -20,7 +20,8 @@ public class BoardController {
 
     @PostMapping("/board")
     public BoardResponseDto createBoard(@RequestBody BoardRequestDto requestDto) {
-        return boardService.createBoard(requestDto);
+        BoardResponseDto dto = boardService.createBoard(requestDto);
+        return dto;
     }
 
     @GetMapping("/board")
@@ -44,9 +45,11 @@ public class BoardController {
 
         if (boardService.deleteBoard(id, requestDto)) {
             map.put("success", "성공");
-        } else {
+        }
+        if (!boardService.deleteBoard(id, requestDto)) {
             map.put("success", "실패");
         }
+
         return map;
     }
 }
