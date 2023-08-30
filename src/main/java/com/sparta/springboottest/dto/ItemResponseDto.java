@@ -1,6 +1,5 @@
 package com.sparta.springboottest.dto;
 
-import com.sparta.springboottest.entity.Board;
 import lombok.Getter;
 
 import java.util.ArrayList;
