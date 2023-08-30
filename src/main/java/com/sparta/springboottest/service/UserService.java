@@ -7,9 +7,13 @@ import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -23,7 +27,7 @@ public class UserService {
     // ADMIN_TOKEN
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
-    public void signup(SignupRequestDto requestDto) {
+    public ResponseEntity<Map> signup(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
 
@@ -45,9 +49,11 @@ public class UserService {
         // 사용자 등록
         User user = new User(username, password);
         userRepository.save(user);
+
+        return ResponseEntity.status(HttpStatus.OK).body(makeJson("회원가입이 성공했습니다."));
     }
 
-    public void login(LoginRequestDto requestDto, HttpServletResponse res) {
+    public ResponseEntity<Map> login(LoginRequestDto requestDto, HttpServletResponse res) {
         String username = requestDto.getUsername();
         String password = requestDto.getPassword();
 
@@ -64,5 +70,15 @@ public class UserService {
         // JWT 생성 및 쿠키에 저장 후 Response  객체에 추가
         String token = jwtUtil.createToken(user.getUsername());
         jwtUtil.addJwtToCookie(token, res);
+
+        return ResponseEntity.status(HttpStatus.OK).body(makeJson("로그인 성공했습니다."));
+    }
+
+    private Map<String, String> makeJson(String message) {
+        Map<String, String> map = new HashMap();
+        map.put("msg", message);
+        map.put("statusCode", String.valueOf(HttpStatus.OK).substring(0, 3));
+
+        return map;
     }
 }
