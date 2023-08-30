@@ -2,6 +2,7 @@ package com.sparta.springboottest.service;
 
 import com.sparta.springboottest.dto.BoardRequestDto;
 import com.sparta.springboottest.dto.BoardResponseDto;
+import com.sparta.springboottest.dto.ItemResponseDto;
 import com.sparta.springboottest.entity.Board;
 import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.repository.BoardRepository;
@@ -33,8 +34,12 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public List<BoardResponseDto> getBoards() {
-        return boardRepository.findAllByOrderByModifiedTimeDesc().stream().map(BoardResponseDto::new).toList();
+    public ItemResponseDto getBoards() {
+        ItemResponseDto responseDto = new ItemResponseDto();
+        for (BoardResponseDto board : boardRepository.findAllByOrderByModifiedTimeDesc().stream().map(BoardResponseDto::new).toList()) {
+            responseDto.setBoard(board);
+        }
+        return responseDto;
     }
 
     @Transactional(readOnly = true)

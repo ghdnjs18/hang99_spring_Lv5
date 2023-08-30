@@ -2,6 +2,7 @@ package com.sparta.springboottest.controller;
 
 import com.sparta.springboottest.dto.BoardRequestDto;
 import com.sparta.springboottest.dto.BoardResponseDto;
+import com.sparta.springboottest.dto.ItemResponseDto;
 import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.service.BoardService;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class BoardController {
     }
 
     @GetMapping("/board")
-    public List<BoardResponseDto> getBoards() {
+    public ItemResponseDto getBoards() {
         return boardService.getBoards();
     }
 
