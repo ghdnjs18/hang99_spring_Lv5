@@ -4,8 +4,10 @@ import com.sparta.springboottest.dto.BoardRequestDto;
 import com.sparta.springboottest.dto.BoardResponseDto;
 import com.sparta.springboottest.dto.ItemResponseDto;
 import com.sparta.springboottest.entity.Board;
+import com.sparta.springboottest.entity.User;
 import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.repository.BoardRepository;
+import com.sparta.springboottest.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,13 +22,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
     public BoardResponseDto createBoard(BoardRequestDto requestDto, String tokenValue) {
         String username = tokenUsername(tokenValue);
+        User user = findUser(username);
 
-        Board board = new Board(requestDto, username);
-
+        Board board = new Board(requestDto);
+        board.setUser(user);
         boardRepository.save(board);
 
         return new BoardResponseDto(board);
@@ -51,7 +55,7 @@ public class BoardService {
     @Transactional
     public BoardResponseDto updateBoard(Long id, BoardRequestDto requestDto, String tokenValue) {
         Board board = findBoard(id);
-        String username = board.getUsername();
+        String username = board.getUser().getUsername();
 
         if (username.equals(tokenUsername(tokenValue))) {
             board.update(requestDto);
@@ -62,7 +66,7 @@ public class BoardService {
 
     public ResponseEntity<Map> deleteBoard(Long id, String tokenValue) {
         Board board = findBoard(id);
-        String username = board.getUsername();
+        String username = board.getUser().getUsername();
         System.out.println(username);
 
         if (username.equals(tokenUsername(tokenValue))) {
@@ -77,6 +81,12 @@ public class BoardService {
     private Board findBoard(Long id) {
         return boardRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("선택한 게시물은 존재하지 않습니다.")
+        );
+    }
+
+    private User findUser(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() ->
+                new IllegalArgumentException("해당 유저는 존재하지 않습니다.")
         );
     }
 

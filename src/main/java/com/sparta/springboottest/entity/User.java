@@ -1,13 +1,13 @@
 package com.sparta.springboottest.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,6 +23,9 @@ public class User {
     @Column(nullable = false)
     @NotBlank(message = "비밀번호는 필수 값 입니다.")
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    private List<Board> boards = new ArrayList<>();
 
     public User(String username, String password) {
         this.username = username;

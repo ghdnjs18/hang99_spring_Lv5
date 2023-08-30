@@ -17,14 +17,14 @@ public class Board extends Timestamped{
     private Long id;
     @Column(name = "title", nullable = false)
     private String title;
-    @Column(name = "username", nullable = false)
-    private String username;
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
+    @ManyToOne
+    @JoinColumn(name = "username")
+    private User user;
 
-    public Board(BoardRequestDto requestDto, String username) {
+    public Board(BoardRequestDto requestDto) {
         this.title = requestDto.getTitle();
-        this.username = username;
         this.contents = requestDto.getContents();
     }
 
