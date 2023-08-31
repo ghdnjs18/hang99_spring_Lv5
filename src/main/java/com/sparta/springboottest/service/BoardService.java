@@ -80,13 +80,13 @@ public class BoardService {
 
     private Board findBoard(Long id) {
         return boardRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("선택한 게시물은 존재하지 않습니다.")
+                new NullPointerException("선택한 게시물은 존재하지 않습니다.")
         );
     }
 
     private User findUser(String username) {
         return userRepository.findByUsername(username).orElseThrow(() ->
-                new IllegalArgumentException("해당 유저는 존재하지 않습니다.")
+                new NullPointerException("해당 유저는 존재하지 않습니다.")
         );
     }
 
