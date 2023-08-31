@@ -16,7 +16,10 @@ import java.util.List;
 @Table(name = "users")
 public class User {
     @Id
-    @Column
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
     @NotBlank(message = "이름은 필수 값 입니다.")
     private String username;
 
