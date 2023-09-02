@@ -78,18 +78,21 @@ public class BoardService {
         return null;
     }
 
+    // 게시물 검색
     private Board findBoard(Long id) {
         return boardRepository.findById(id).orElseThrow(() ->
                 new NullPointerException("선택한 게시물은 존재하지 않습니다.")
         );
     }
 
+    // 유저 검색
     private User findUser(String username) {
         return userRepository.findByUsername(username).orElseThrow(() ->
                 new NullPointerException("해당 유저는 존재하지 않습니다.")
         );
     }
 
+    // 토큰에서 유저네임 가져오기
     private String tokenUsername(String tokenValue) {
         // JWT 토큰 substring
         String token = jwtUtil.substringToken(tokenValue);
@@ -102,6 +105,7 @@ public class BoardService {
         return info.getSubject();
     }
 
+    // 성공 메시지 생성
     private Map<String, String> makeJson(String message) {
         Map<String, String> map = new HashMap();
         map.put("msg", message);

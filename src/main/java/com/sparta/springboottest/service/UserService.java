@@ -6,11 +6,13 @@ import com.sparta.springboottest.entity.User;
 import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,26 +26,15 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    // ADMIN_TOKEN
-    private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
-
+    // 회원가입
     public ResponseEntity<Map> signup(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
 
-        if (username.matches("[a-z0-9]{4,10}")) {
-            // 회원 중복 확인
-            Optional<User> checkUsername = userRepository.findByUsername(username);
-            if (checkUsername.isPresent()) {
-                throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
-            }
-        }
-        if (!username.matches("[a-z0-9]{4,10}")) {
-            throw new IllegalArgumentException("username형식이 맞지않습니다.");
-        }
-
-        if (!requestDto.getPassword().matches("[a-zA-Z0-9]{8,15}")) {
-            throw new IllegalArgumentException("password형식이 맞지않습니다.");
+        // 회원 중복 확인
+        Optional<User> checkUsername = userRepository.findByUsername(username);
+        if (checkUsername.isPresent()) {
+            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
 
         // 사용자 등록
@@ -53,6 +44,7 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.OK).body(makeJson("회원가입이 성공했습니다."));
     }
 
+    // 로그인
     public ResponseEntity<Map> login(LoginRequestDto requestDto, HttpServletResponse res) {
         String username = requestDto.getUsername();
         String password = requestDto.getPassword();
@@ -74,6 +66,7 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.OK).body(makeJson("로그인 성공했습니다."));
     }
 
+    // 성공 메시지 생성
     private Map<String, String> makeJson(String message) {
         Map<String, String> map = new HashMap();
         map.put("msg", message);

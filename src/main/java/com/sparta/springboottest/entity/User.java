@@ -6,9 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Getter
 @Setter
@@ -19,11 +16,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "username", nullable = false)
     @NotBlank(message = "이름은 필수 값 입니다.")
     private String username;
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     @NotBlank(message = "비밀번호는 필수 값 입니다.")
     private String password;
 
