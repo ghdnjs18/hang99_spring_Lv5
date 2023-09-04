@@ -14,6 +14,6 @@ public class SignupRequestDto {
     private String username;
 
     @Size(min = 8, max = 15, message = "password은 8글자 이상, 15글자 이하입니다.", groups = SizeCheckGroup.class)
-    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "password형식은 영문, 숫자, 특수문자만 가능합니다.", groups = PatternCheckGroup.class)
+    @Pattern(regexp = "^[a-zA-Z0-9\\W]*$", message = "password형식은 영문, 숫자, 특수문자만 가능합니다.", groups = PatternCheckGroup.class)
     private String password;
 }
