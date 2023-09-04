@@ -5,6 +5,7 @@ import com.sparta.springboottest.dto.CommentResponseDto;
 import com.sparta.springboottest.entity.Board;
 import com.sparta.springboottest.entity.Comment;
 import com.sparta.springboottest.entity.User;
+import com.sparta.springboottest.entity.UserRoleEnum;
 import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.repository.BoardRepository;
 import com.sparta.springboottest.repository.CommentRepository;
@@ -47,7 +48,12 @@ public class CommentService {
         String username = comment.getUser().getUsername();
 
         if (!username.equals(tokenUsername(tokenValue))) {
-            throw new IllegalArgumentException("해당 댓글의 작성자가 아닙니다.");
+            if (findUser(tokenUsername(tokenValue)).getRole() == UserRoleEnum.ADMIN) {
+                comment.update(requestDto);
+
+                return new CommentResponseDto(comment);
+            }
+            throw new IllegalArgumentException("해당 댓글의 작성자만 수정할 수 있습니다.");
         }
         comment.update(requestDto);
 
@@ -59,7 +65,12 @@ public class CommentService {
         String username = comment.getUser().getUsername();
 
         if (!username.equals(tokenUsername(tokenValue))) {
-            throw new IllegalArgumentException("해당 댓글의 작성자가 아닙니다.");
+            if (findUser(tokenUsername(tokenValue)).getRole() == UserRoleEnum.ADMIN) {
+                commentRepository.delete(comment);
+
+                return ResponseEntity.status(HttpStatus.OK).body(makeJson("게시물 삭제를 성공했습니다.", HttpStatus.OK));
+            }
+            throw new IllegalArgumentException("해당 댓글의 작성자만 삭제할 수 있습니다.");
         }
         commentRepository.delete(comment);
 
@@ -89,7 +100,7 @@ public class CommentService {
         String token = jwtUtil.substringToken(tokenValue);
         // 토큰 검증
         if (!jwtUtil.validateToken(token)) {
-            throw new IllegalArgumentException("Token Error");
+            throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
         }
         Claims info = jwtUtil.getUserInfoFromToken(token);
 

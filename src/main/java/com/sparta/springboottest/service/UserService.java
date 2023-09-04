@@ -62,7 +62,7 @@ public class UserService {
 
         // 사용자 확인
         User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
+                () -> new IllegalArgumentException("회원을 찾을 수 없습니다.")
         );
 
         // 비밀번호 확인
