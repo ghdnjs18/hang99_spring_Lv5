@@ -3,6 +3,7 @@ package com.sparta.springboottest.service;
 import com.sparta.springboottest.dto.LoginRequestDto;
 import com.sparta.springboottest.dto.SignupRequestDto;
 import com.sparta.springboottest.entity.User;
+import com.sparta.springboottest.entity.UserRoleEnum;
 import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +27,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
+    // ADMIN_TOKEN
+    private final String ADMIN_TOKEN = "A1234";
+
     // 회원가입
     public ResponseEntity<Map> signup(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
@@ -37,8 +41,17 @@ public class UserService {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
 
+        // 사용자 권한 확인
+        UserRoleEnum role = UserRoleEnum.USER;
+        if (requestDto.isAdmin()) {
+            if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
+                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
+            }
+            role = UserRoleEnum.ADMIN;
+        }
+
         // 사용자 등록
-        User user = new User(username, password);
+        User user = new User(username, password, role);
         userRepository.save(user);
 
         return ResponseEntity.status(HttpStatus.OK).body(makeJson("회원가입이 성공했습니다."));

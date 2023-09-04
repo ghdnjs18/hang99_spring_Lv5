@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.NotBlank;
 
 @Getter
 @Setter
@@ -15,5 +16,9 @@ public class SignupRequestDto {
 
     @Size(min = 8, max = 15, message = "password은 8글자 이상, 15글자 이하입니다.", groups = SizeCheckGroup.class)
     @Pattern(regexp = "^[a-zA-Z0-9\\W]*$", message = "password형식은 영문, 숫자, 특수문자만 가능합니다.", groups = PatternCheckGroup.class)
+    @NotBlank(message = "공백은 비밀번호로 사용 할 수 없습니다.")
     private String password;
+
+    private boolean admin = false;
+    private String adminToken = "";
 }

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
 @Getter
@@ -17,16 +16,19 @@ public class User {
     private Long id;
 
     @Column(name = "username", nullable = false)
-    @NotBlank(message = "이름은 필수 값 입니다.")
     private String username;
 
     @Column(name = "password", nullable = false)
-    @NotBlank(message = "비밀번호는 필수 값 입니다.")
     private String password;
 
-    public User(String username, String password) {
+    @Column(name = "role", nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum role;
+
+    public User(String username, String password, UserRoleEnum role) {
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
 }
