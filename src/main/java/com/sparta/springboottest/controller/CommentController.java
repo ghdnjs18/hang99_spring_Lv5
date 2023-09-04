@@ -18,4 +18,9 @@ public class CommentController {
     public CommentResponseDto createComment(@RequestBody CommentRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String tokenValue) {
         return commentService.createComment(requestDto, tokenValue);
     }
+
+    @PutMapping("/comment/{id}")
+    public CommentResponseDto updateComment(@PathVariable Long id, @RequestBody CommentRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String tokenValue) {
+        return commentService.updateComment(id, requestDto, tokenValue);
+    }
 }

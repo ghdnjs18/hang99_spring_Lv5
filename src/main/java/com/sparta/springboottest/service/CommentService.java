@@ -12,6 +12,7 @@ import com.sparta.springboottest.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,24 @@ public class CommentService {
         commentRepository.save(comment);
 
         return new CommentResponseDto(comment);
+    }
+
+    @Transactional
+    public CommentResponseDto updateComment(Long id, CommentRequestDto requestDto, String tokenValue) {
+        Comment comment = findComment(id);
+        String username = comment.getUser().getUsername();
+
+        if (username.equals(tokenUsername(tokenValue))) {
+            comment.update(requestDto);
+        }
+
+        return new CommentResponseDto(comment);
+    }
+
+    private Comment findComment(Long id) {
+        return commentRepository.findById(id).orElseThrow(() ->
+                new NullPointerException("선택한 댓글은 존재하지 않습니다.")
+        );
     }
 
     private Board findBoard(Long id) {
@@ -58,4 +77,5 @@ public class CommentService {
 
         return info.getSubject();
     }
+
 }
