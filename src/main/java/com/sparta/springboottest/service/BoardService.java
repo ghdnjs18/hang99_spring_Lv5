@@ -21,6 +21,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class BoardService {
+
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
@@ -29,8 +30,7 @@ public class BoardService {
         String username = tokenUsername(tokenValue);
         User user = findUser(username);
 
-        Board board = new Board(requestDto);
-        board.setUser(user);
+        Board board = new Board(requestDto, user);
         boardRepository.save(board);
 
         return new BoardResponseDto(board);
@@ -64,18 +64,17 @@ public class BoardService {
         return new BoardResponseDto(board);
     }
 
-    public ResponseEntity<Map> deleteBoard(Long id, String tokenValue) {
+    public ResponseEntity deleteBoard(Long id, String tokenValue) {
         Board board = findBoard(id);
         String username = board.getUser().getUsername();
-        System.out.println(username);
 
         if (username.equals(tokenUsername(tokenValue))) {
             boardRepository.delete(board);
 
-            return ResponseEntity.status(HttpStatus.OK).body(makeJson("게시물 삭제를 성공했습니다."));
+            return ResponseEntity.status(HttpStatus.OK).body(makeJson("게시물 삭제를 성공했습니다.", HttpStatus.OK));
         }
 
-        return null;
+        return new ResponseEntity<>(makeJson("해당 게시물의 작성자가 아닙니다.", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
 
     // 게시물 검색
@@ -106,10 +105,10 @@ public class BoardService {
     }
 
     // 성공 메시지 생성
-    private Map<String, String> makeJson(String message) {
+    private Map<String, String> makeJson(String message, HttpStatus status) {
         Map<String, String> map = new HashMap();
         map.put("msg", message);
-        map.put("statusCode", String.valueOf(HttpStatus.OK).substring(0, 3));
+        map.put("statusCode", String.valueOf(status).substring(0, 3));
 
         return map;
     }

@@ -4,28 +4,36 @@ import com.sparta.springboottest.dto.BoardRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @Table(name = "board")
-public class Board extends Timestamped{
+public class Board extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "title", nullable = false)
     private String title;
+
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
+
     @ManyToOne
-    @JoinColumn(name = "username")
+    @JoinColumn(name = "username", nullable = false)
     private User user;
 
-    public Board(BoardRequestDto requestDto) {
+    @OneToMany(mappedBy = "board")
+    private List<Comment> commentList = new ArrayList<>();
+
+    public Board(BoardRequestDto requestDto, User user) {
         this.title = requestDto.getTitle();
         this.contents = requestDto.getContents();
+        this.user = user;
     }
 
     public void update(BoardRequestDto requestDto) {

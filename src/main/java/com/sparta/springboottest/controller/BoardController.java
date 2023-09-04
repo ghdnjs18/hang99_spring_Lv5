@@ -5,6 +5,7 @@ import com.sparta.springboottest.dto.BoardResponseDto;
 import com.sparta.springboottest.dto.ItemResponseDto;
 import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.service.BoardService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,18 +13,14 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class BoardController {
 
     private final BoardService boardService;
 
-    public BoardController(BoardService boardService) {
-        this.boardService = boardService;
-    }
-
     @PostMapping("/board")
     public BoardResponseDto createBoard(@RequestBody BoardRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String tokenValue) {
-        BoardResponseDto dto = boardService.createBoard(requestDto, tokenValue);
-        return dto;
+        return boardService.createBoard(requestDto, tokenValue);
     }
 
     @GetMapping("/board")
