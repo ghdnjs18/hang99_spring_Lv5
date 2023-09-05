@@ -2,12 +2,14 @@ package com.sparta.springboottest.service;
 
 import com.sparta.springboottest.dto.BoardRequestDto;
 import com.sparta.springboottest.dto.BoardResponseDto;
+import com.sparta.springboottest.dto.CommentResponseDto;
 import com.sparta.springboottest.dto.ItemResponseDto;
 import com.sparta.springboottest.entity.Board;
 import com.sparta.springboottest.entity.User;
 import com.sparta.springboottest.entity.UserRoleEnum;
 import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.repository.BoardRepository;
+import com.sparta.springboottest.repository.CommentRepository;
 import com.sparta.springboottest.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final JwtUtil jwtUtil;
 
     public BoardResponseDto createBoard(BoardRequestDto requestDto, String tokenValue) {
@@ -41,6 +44,7 @@ public class BoardService {
     public ItemResponseDto getBoards() {
         ItemResponseDto responseDto = new ItemResponseDto();
         for (BoardResponseDto board : boardRepository.findAllByOrderByModifiedTimeDesc().stream().map(BoardResponseDto::new).toList()) {
+            boardSetComment(board, board.getId());
             responseDto.setBoard(board);
         }
         return responseDto;
@@ -49,8 +53,10 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardResponseDto getBoard(Long id) {
         Board board = findBoard(id);
+        BoardResponseDto responseDto = new BoardResponseDto(board);
+        boardSetComment(responseDto, id);
 
-        return new BoardResponseDto(board);
+        return responseDto;
     }
 
     @Transactional
@@ -113,6 +119,12 @@ public class BoardService {
         Claims info = jwtUtil.getUserInfoFromToken(token);
 
         return info.getSubject();
+    }
+
+    private void boardSetComment(BoardResponseDto board, Long id) {
+        for (CommentResponseDto comment : commentRepository.findByBoard_idOrderByModifiedTimeDesc(id).stream().map(CommentResponseDto::new).toList()) {
+            board.setComment(comment);
+        }
     }
 
     // 성공 메시지 생성

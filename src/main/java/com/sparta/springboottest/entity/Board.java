@@ -41,6 +41,11 @@ public class Board extends Timestamped {
         this.contents = requestDto.getContents();
     }
 
+    public void addCommentList(Comment comment) {
+        this.commentList.add(comment);
+        comment.setBoard(this);
+    }
+
 }
 
 
