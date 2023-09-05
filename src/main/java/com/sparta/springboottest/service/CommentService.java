@@ -2,6 +2,7 @@ package com.sparta.springboottest.service;
 
 import com.sparta.springboottest.dto.CommentRequestDto;
 import com.sparta.springboottest.dto.CommentResponseDto;
+import com.sparta.springboottest.dto.MessageResponseDto;
 import com.sparta.springboottest.entity.Board;
 import com.sparta.springboottest.entity.Comment;
 import com.sparta.springboottest.entity.User;
@@ -16,9 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -64,17 +62,18 @@ public class CommentService {
         Comment comment = findComment(id);
         String username = comment.getUser().getUsername();
 
+        MessageResponseDto message = new MessageResponseDto("게시물 삭제를 성공했습니다.", HttpStatus.OK.value());
         if (!username.equals(tokenUsername(tokenValue))) {
             if (findUser(tokenUsername(tokenValue)).getRole() == UserRoleEnum.ADMIN) {
                 commentRepository.delete(comment);
 
-                return ResponseEntity.status(HttpStatus.OK).body(makeJson("게시물 삭제를 성공했습니다.", HttpStatus.OK));
+                return ResponseEntity.status(HttpStatus.OK).body(message);
             }
             throw new IllegalArgumentException("해당 댓글의 작성자만 삭제할 수 있습니다.");
         }
         commentRepository.delete(comment);
 
-        return ResponseEntity.status(HttpStatus.OK).body(makeJson("댓글 삭제를 성공했습니다.", HttpStatus.OK));
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
     private Comment findComment(Long id) {
@@ -105,13 +104,5 @@ public class CommentService {
         Claims info = jwtUtil.getUserInfoFromToken(token);
 
         return info.getSubject();
-    }
-
-    private Map<String, String> makeJson(String message, HttpStatus status) {
-        Map<String, String> map = new HashMap();
-        map.put("msg", message);
-        map.put("statusCode", String.valueOf(status).substring(0, 3));
-
-        return map;
     }
 }

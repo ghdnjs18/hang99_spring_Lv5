@@ -1,6 +1,7 @@
 package com.sparta.springboottest.service;
 
 import com.sparta.springboottest.dto.LoginRequestDto;
+import com.sparta.springboottest.dto.MessageResponseDto;
 import com.sparta.springboottest.dto.SignupRequestDto;
 import com.sparta.springboottest.entity.User;
 import com.sparta.springboottest.entity.UserRoleEnum;
@@ -13,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -29,7 +28,7 @@ public class UserService {
     private final String ADMIN_TOKEN = "A1234";
 
     // 회원가입
-    public ResponseEntity<Map> signup(SignupRequestDto requestDto) {
+    public ResponseEntity signup(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
 
@@ -52,11 +51,13 @@ public class UserService {
         User user = new User(username, password, role);
         userRepository.save(user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(makeJson("회원가입이 성공했습니다."));
+        MessageResponseDto message = new MessageResponseDto("회원가입이 성공했습니다.", HttpStatus.OK.value());
+
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
     // 로그인
-    public ResponseEntity<Map> login(LoginRequestDto requestDto, HttpServletResponse res) {
+    public ResponseEntity login(LoginRequestDto requestDto, HttpServletResponse res) {
         String username = requestDto.getUsername();
         String password = requestDto.getPassword();
 
@@ -74,15 +75,8 @@ public class UserService {
         String token = jwtUtil.createToken(user.getUsername());
         jwtUtil.addJwtToCookie(token, res);
 
-        return ResponseEntity.status(HttpStatus.OK).body(makeJson("로그인 성공했습니다."));
-    }
+        MessageResponseDto message = new MessageResponseDto("로그인 성공했습니다.", HttpStatus.OK.value());
 
-    // 성공 메시지 생성
-    private Map<String, String> makeJson(String message) {
-        Map<String, String> map = new HashMap();
-        map.put("msg", message);
-        map.put("statusCode", String.valueOf(HttpStatus.OK).substring(0, 3));
-
-        return map;
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 }

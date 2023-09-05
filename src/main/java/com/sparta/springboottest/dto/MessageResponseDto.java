@@ -1,11 +1,11 @@
-package com.sparta.springboottest.exception;
+package com.sparta.springboottest.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class RestApiException {
-    private String msg;
+public class MessageResponseDto {
+    private String message;
     private int statusCode;
 }
