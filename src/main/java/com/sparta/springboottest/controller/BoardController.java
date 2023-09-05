@@ -3,6 +3,7 @@ package com.sparta.springboottest.controller;
 import com.sparta.springboottest.dto.BoardRequestDto;
 import com.sparta.springboottest.dto.BoardResponseDto;
 import com.sparta.springboottest.dto.ItemResponseDto;
+import com.sparta.springboottest.dto.MessageResponseDto;
 import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ public class BoardController {
     }
 
     @DeleteMapping("/board/{id}")
-    public ResponseEntity<Map> deleteBoard(@PathVariable Long id, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String tokenValue) {
+    public ResponseEntity<MessageResponseDto> deleteBoard(@PathVariable Long id, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String tokenValue) {
         return boardService.deleteBoard(id, tokenValue);
     }
 }

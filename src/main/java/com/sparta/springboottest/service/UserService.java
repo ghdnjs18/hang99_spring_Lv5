@@ -28,7 +28,7 @@ public class UserService {
     private final String ADMIN_TOKEN = "A1234";
 
     // 회원가입
-    public ResponseEntity signup(SignupRequestDto requestDto) {
+    public ResponseEntity<MessageResponseDto> signup(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
 
@@ -57,7 +57,7 @@ public class UserService {
     }
 
     // 로그인
-    public ResponseEntity login(LoginRequestDto requestDto, HttpServletResponse res) {
+    public ResponseEntity<MessageResponseDto> login(LoginRequestDto requestDto, HttpServletResponse res) {
         String username = requestDto.getUsername();
         String password = requestDto.getPassword();
 

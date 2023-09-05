@@ -71,7 +71,7 @@ public class BoardService {
         return new BoardResponseDto(board);
     }
 
-    public ResponseEntity deleteBoard(Long id, String tokenValue) {
+    public ResponseEntity<MessageResponseDto> deleteBoard(Long id, String tokenValue) {
         Board board = findBoard(id);
         String username = board.getUser().getUsername();
 

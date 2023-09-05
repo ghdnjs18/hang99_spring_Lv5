@@ -58,7 +58,7 @@ public class CommentService {
         return new CommentResponseDto(comment);
     }
 
-    public ResponseEntity deleteComment(Long id, String tokenValue) {
+    public ResponseEntity<MessageResponseDto> deleteComment(Long id, String tokenValue) {
         Comment comment = findComment(id);
         String username = comment.getUser().getUsername();
 

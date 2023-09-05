@@ -2,6 +2,7 @@ package com.sparta.springboottest.controller;
 
 import com.sparta.springboottest.dto.CommentRequestDto;
 import com.sparta.springboottest.dto.CommentResponseDto;
+import com.sparta.springboottest.dto.MessageResponseDto;
 import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/comment/{id}")
-    public ResponseEntity deleteComment(@PathVariable Long id, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String tokenValue) {
+    public ResponseEntity<MessageResponseDto> deleteComment(@PathVariable Long id, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String tokenValue) {
         return commentService.deleteComment(id, tokenValue);
     }
 }
