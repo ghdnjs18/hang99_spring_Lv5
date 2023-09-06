@@ -3,27 +3,23 @@ package com.sparta.springboottest.controller;
 import com.sparta.springboottest.dto.BoardRequestDto;
 import com.sparta.springboottest.dto.BoardResponseDto;
 import com.sparta.springboottest.dto.ItemResponseDto;
+import com.sparta.springboottest.dto.MessageResponseDto;
 import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.service.BoardService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class BoardController {
 
     private final BoardService boardService;
 
-    public BoardController(BoardService boardService) {
-        this.boardService = boardService;
-    }
-
     @PostMapping("/board")
     public BoardResponseDto createBoard(@RequestBody BoardRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String tokenValue) {
-        BoardResponseDto dto = boardService.createBoard(requestDto, tokenValue);
-        return dto;
+        return boardService.createBoard(requestDto, tokenValue);
     }
 
     @GetMapping("/board")
@@ -42,7 +38,7 @@ public class BoardController {
     }
 
     @DeleteMapping("/board/{id}")
-    public ResponseEntity<Map> deleteBoard(@PathVariable Long id, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String tokenValue) {
+    public ResponseEntity<MessageResponseDto> deleteBoard(@PathVariable Long id, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String tokenValue) {
         return boardService.deleteBoard(id, tokenValue);
     }
 }

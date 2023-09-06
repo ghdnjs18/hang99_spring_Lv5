@@ -6,22 +6,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @Table(name = "board")
-public class Board extends Timestamped{
+public class Board extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "title", nullable = false)
     private String title;
+
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
-    @ManyToOne
-    @JoinColumn(name = "username")
-    private User user;
+
+    @Column(name="username",nullable = false)
+    private String username;
+
+    @OneToMany
+    @JoinColumn(name = "board_id")
+    private List<Comment> commentList = new ArrayList<>();
 
     public Board(BoardRequestDto requestDto) {
         this.title = requestDto.getTitle();
@@ -31,6 +40,10 @@ public class Board extends Timestamped{
     public void update(BoardRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.contents = requestDto.getContents();
+    }
+
+    public void addCommentList(Comment comment) {
+        this.commentList.add(comment);
     }
 
 }

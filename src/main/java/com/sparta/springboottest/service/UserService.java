@@ -1,8 +1,10 @@
 package com.sparta.springboottest.service;
 
 import com.sparta.springboottest.dto.LoginRequestDto;
+import com.sparta.springboottest.dto.MessageResponseDto;
 import com.sparta.springboottest.dto.SignupRequestDto;
 import com.sparta.springboottest.entity.User;
+import com.sparta.springboottest.entity.UserRoleEnum;
 import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -25,41 +25,45 @@ public class UserService {
     private final JwtUtil jwtUtil;
 
     // ADMIN_TOKEN
-    private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
+    private final String ADMIN_TOKEN = "A1234";
 
-    public ResponseEntity<Map> signup(SignupRequestDto requestDto) {
+    // 회원가입
+    public ResponseEntity<MessageResponseDto> signup(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
 
-        if (username.matches("[a-z0-9]{4,10}")) {
-            // 회원 중복 확인
-            Optional<User> checkUsername = userRepository.findByUsername(username);
-            if (checkUsername.isPresent()) {
-                throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
-            }
-        }
-        if (!username.matches("[a-z0-9]{4,10}")) {
-            throw new IllegalArgumentException("username형식이 맞지않습니다.");
+        // 회원 중복 확인
+        Optional<User> checkUsername = userRepository.findByUsername(username);
+        if (checkUsername.isPresent()) {
+            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
 
-        if (!requestDto.getPassword().matches("[a-zA-Z0-9]{8,15}")) {
-            throw new IllegalArgumentException("password형식이 맞지않습니다.");
+        // 사용자 권한 확인
+        UserRoleEnum role = UserRoleEnum.USER;
+        if (requestDto.isAdmin()) {
+            if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
+                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
+            }
+            role = UserRoleEnum.ADMIN;
         }
 
         // 사용자 등록
-        User user = new User(username, password);
+        User user = new User(username, password, role);
         userRepository.save(user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(makeJson("회원가입이 성공했습니다."));
+        MessageResponseDto message = new MessageResponseDto("회원가입이 성공했습니다.", HttpStatus.OK.value());
+
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
-    public ResponseEntity<Map> login(LoginRequestDto requestDto, HttpServletResponse res) {
+    // 로그인
+    public ResponseEntity<MessageResponseDto> login(LoginRequestDto requestDto, HttpServletResponse res) {
         String username = requestDto.getUsername();
         String password = requestDto.getPassword();
 
         // 사용자 확인
         User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
+                () -> new IllegalArgumentException("회원을 찾을 수 없습니다.")
         );
 
         // 비밀번호 확인
@@ -71,14 +75,8 @@ public class UserService {
         String token = jwtUtil.createToken(user.getUsername());
         jwtUtil.addJwtToCookie(token, res);
 
-        return ResponseEntity.status(HttpStatus.OK).body(makeJson("로그인 성공했습니다."));
-    }
+        MessageResponseDto message = new MessageResponseDto("로그인 성공했습니다.", HttpStatus.OK.value());
 
-    private Map<String, String> makeJson(String message) {
-        Map<String, String> map = new HashMap();
-        map.put("msg", message);
-        map.put("statusCode", String.valueOf(HttpStatus.OK).substring(0, 3));
-
-        return map;
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 }
