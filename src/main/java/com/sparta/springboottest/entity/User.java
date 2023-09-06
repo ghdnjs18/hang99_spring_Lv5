@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -23,10 +26,25 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private List<Board> boardList = new ArrayList<>();
+
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private List<Comment> commentList = new ArrayList<>();
+
     public User(String username, String password, UserRoleEnum role) {
         this.username = username;
         this.password = password;
         this.role = role;
     }
 
+    public void addCommentList(Comment comment) {
+        this.commentList.add(comment);
+    }
+
+    public void addBoardList(Board board) {
+        this.boardList.add(board);
+    }
 }

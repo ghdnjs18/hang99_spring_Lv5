@@ -1,7 +1,11 @@
 package com.sparta.springboottest.service;
 
-import com.sparta.springboottest.dto.*;
+import com.sparta.springboottest.dto.BoardRequestDto;
+import com.sparta.springboottest.dto.BoardResponseDto;
+import com.sparta.springboottest.dto.ItemResponseDto;
+import com.sparta.springboottest.dto.MessageResponseDto;
 import com.sparta.springboottest.entity.Board;
+import com.sparta.springboottest.entity.Comment;
 import com.sparta.springboottest.entity.User;
 import com.sparta.springboottest.entity.UserRoleEnum;
 import com.sparta.springboottest.jwt.JwtUtil;
@@ -15,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -26,9 +32,11 @@ public class BoardService {
 
     public BoardResponseDto createBoard(BoardRequestDto requestDto, String tokenValue) {
         String username = tokenUsername(tokenValue);
-        User user = findUser(username);
+        Board board = new Board(requestDto);
+        board.setUsername(username);
 
-        Board board = new Board(requestDto, user);
+        User user = findUser(username);
+        user.addBoardList(board);
         boardRepository.save(board);
 
         return new BoardResponseDto(board);
@@ -37,9 +45,9 @@ public class BoardService {
     @Transactional(readOnly = true)
     public ItemResponseDto getBoards() {
         ItemResponseDto responseDto = new ItemResponseDto();
-        for (BoardResponseDto board : boardRepository.findAllByOrderByModifiedTimeDesc().stream().map(BoardResponseDto::new).toList()) {
-            boardSetComment(board, board.getId());
-            responseDto.setBoard(board);
+        List<BoardResponseDto> list = boardRepository.findAllByOrderByModifiedTimeDesc().stream().map(BoardResponseDto::new).toList();
+        for(BoardResponseDto boardResponseDto : list){
+            responseDto.setBoard(boardResponseDto);
         }
         return responseDto;
     }
@@ -48,7 +56,6 @@ public class BoardService {
     public BoardResponseDto getBoard(Long id) {
         Board board = findBoard(id);
         BoardResponseDto responseDto = new BoardResponseDto(board);
-        boardSetComment(responseDto, id);
 
         return responseDto;
     }
@@ -56,36 +63,29 @@ public class BoardService {
     @Transactional
     public BoardResponseDto updateBoard(Long id, BoardRequestDto requestDto, String tokenValue) {
         Board board = findBoard(id);
-        String username = board.getUser().getUsername();
+        String username = tokenUsername(tokenValue);
 
-        if (!username.equals(tokenUsername(tokenValue))) {
-            if (findUser(tokenUsername(tokenValue)).getRole() == UserRoleEnum.ADMIN) {
-                board.update(requestDto);
-
-                return new BoardResponseDto(board);
-            }
+        if (!username.equals(board.getUsername()) && findUser(tokenUsername(tokenValue)).getRole() != UserRoleEnum.ADMIN) {
             throw new IllegalArgumentException("해당 게시물의 작성자만 수정할 수 있습니다.");
         }
         board.update(requestDto);
-
         return new BoardResponseDto(board);
     }
 
     public ResponseEntity<MessageResponseDto> deleteBoard(Long id, String tokenValue) {
         Board board = findBoard(id);
-        String username = board.getUser().getUsername();
-
-        MessageResponseDto message = new MessageResponseDto("게시물 삭제를 성공했습니다.", HttpStatus.OK.value());
-        if (!username.equals(tokenUsername(tokenValue))) {
-            if (findUser(tokenUsername(tokenValue)).getRole() == UserRoleEnum.ADMIN) {
-                boardRepository.delete(board);
-
-                return ResponseEntity.status(HttpStatus.OK).body(message);
-            }
+        String username = tokenUsername(tokenValue);
+        if (!username.equals(board.getUsername()) && findUser(tokenUsername(tokenValue)).getRole() != UserRoleEnum.ADMIN) {
             throw new IllegalArgumentException("해당 게시물의 작성자만 삭제할 수 있습니다.");
+        }
+
+        List<Comment> commentList = board.getCommentList();
+        for(Comment comment : commentList){
+            commentRepository.delete(comment);
         }
         boardRepository.delete(board);
 
+        MessageResponseDto message = new MessageResponseDto("게시물 삭제를 성공했습니다.", HttpStatus.OK.value());
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
@@ -116,10 +116,4 @@ public class BoardService {
         return info.getSubject();
     }
 
-    // Board에 Comment 리스트 넣기
-    private void boardSetComment(BoardResponseDto board, Long id) {
-        for (CommentResponseDto comment : commentRepository.findByBoard_idOrderByModifiedTimeDesc(id).stream().map(CommentResponseDto::new).toList()) {
-            board.setComment(comment);
-        }
-    }
 }

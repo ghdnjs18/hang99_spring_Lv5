@@ -4,12 +4,14 @@ import com.sparta.springboottest.dto.BoardRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "board")
 public class Board extends Timestamped {
@@ -23,17 +25,16 @@ public class Board extends Timestamped {
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
 
-    @ManyToOne
-    @JoinColumn(name = "username", nullable = false)
-    private User user;
+    @Column(name="username",nullable = false)
+    private String username;
 
-    @OneToMany(mappedBy = "board", cascade = {CascadeType.REMOVE})
+    @OneToMany
+    @JoinColumn(name = "board_id")
     private List<Comment> commentList = new ArrayList<>();
 
-    public Board(BoardRequestDto requestDto, User user) {
+    public Board(BoardRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.contents = requestDto.getContents();
-        this.user = user;
     }
 
     public void update(BoardRequestDto requestDto) {
@@ -43,7 +44,6 @@ public class Board extends Timestamped {
 
     public void addCommentList(Comment comment) {
         this.commentList.add(comment);
-        comment.setBoard(this);
     }
 
 }
