@@ -1,7 +1,11 @@
 package com.sparta.springboottest.service;
 
-import com.sparta.springboottest.dto.*;
+import com.sparta.springboottest.dto.BoardRequestDto;
+import com.sparta.springboottest.dto.BoardResponseDto;
+import com.sparta.springboottest.dto.ItemResponseDto;
+import com.sparta.springboottest.dto.MessageResponseDto;
 import com.sparta.springboottest.entity.Board;
+import com.sparta.springboottest.entity.Comment;
 import com.sparta.springboottest.entity.User;
 import com.sparta.springboottest.entity.UserRoleEnum;
 import com.sparta.springboottest.jwt.JwtUtil;
@@ -29,6 +33,7 @@ public class BoardService {
     public BoardResponseDto createBoard(BoardRequestDto requestDto, String tokenValue) {
         String username = tokenUsername(tokenValue);
         Board board = new Board(requestDto);
+        board.setUsername(username);
 
         User user = findUser(username);
         user.addBoardList(board);
@@ -70,11 +75,17 @@ public class BoardService {
     public ResponseEntity<MessageResponseDto> deleteBoard(Long id, String tokenValue) {
         Board board = findBoard(id);
         String username = tokenUsername(tokenValue);
-        MessageResponseDto message = new MessageResponseDto("게시물 삭제를 성공했습니다.", HttpStatus.OK.value());
         if (!username.equals(board.getUsername()) && findUser(tokenUsername(tokenValue)).getRole() != UserRoleEnum.ADMIN) {
             throw new IllegalArgumentException("해당 게시물의 작성자만 삭제할 수 있습니다.");
         }
+
+        List<Comment> commentList = board.getCommentList();
+        for(Comment comment : commentList){
+            commentRepository.delete(comment);
+        }
         boardRepository.delete(board);
+
+        MessageResponseDto message = new MessageResponseDto("게시물 삭제를 성공했습니다.", HttpStatus.OK.value());
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 

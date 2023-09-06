@@ -18,6 +18,7 @@ public class Comment extends Timestamped {
 
     @Column(name = "comment", nullable = false, length = 500)
     private String comment;
+
     @Column(name="username",nullable = false)
     private String username;
 
