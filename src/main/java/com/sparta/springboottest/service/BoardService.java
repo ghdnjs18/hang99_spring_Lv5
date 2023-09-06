@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -26,9 +28,10 @@ public class BoardService {
 
     public BoardResponseDto createBoard(BoardRequestDto requestDto, String tokenValue) {
         String username = tokenUsername(tokenValue);
-        User user = findUser(username);
+        Board board = new Board(requestDto);
 
-        Board board = new Board(requestDto, user);
+        User user = findUser(username);
+        user.addBoardList(board);
         boardRepository.save(board);
 
         return new BoardResponseDto(board);
@@ -37,9 +40,9 @@ public class BoardService {
     @Transactional(readOnly = true)
     public ItemResponseDto getBoards() {
         ItemResponseDto responseDto = new ItemResponseDto();
-        for (BoardResponseDto board : boardRepository.findAllByOrderByModifiedTimeDesc().stream().map(BoardResponseDto::new).toList()) {
-            boardSetComment(board, board.getId());
-            responseDto.setBoard(board);
+        List<BoardResponseDto> list = boardRepository.findAllByOrderByModifiedTimeDesc().stream().map(BoardResponseDto::new).toList();
+        for(BoardResponseDto boardResponseDto : list){
+            responseDto.setBoard(boardResponseDto);
         }
         return responseDto;
     }
@@ -48,7 +51,6 @@ public class BoardService {
     public BoardResponseDto getBoard(Long id) {
         Board board = findBoard(id);
         BoardResponseDto responseDto = new BoardResponseDto(board);
-        boardSetComment(responseDto, id);
 
         return responseDto;
     }
@@ -117,9 +119,5 @@ public class BoardService {
     }
 
     // Board에 Comment 리스트 넣기
-    private void boardSetComment(BoardResponseDto board, Long id) {
-        for (CommentResponseDto comment : commentRepository.findByBoard_idOrderByModifiedTimeDesc(id).stream().map(CommentResponseDto::new).toList()) {
-            board.setComment(comment);
-        }
-    }
+
 }
