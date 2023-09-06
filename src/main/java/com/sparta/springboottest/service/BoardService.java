@@ -118,6 +118,4 @@ public class BoardService {
         return info.getSubject();
     }
 
-    // Board에 Comment 리스트 넣기
-
 }

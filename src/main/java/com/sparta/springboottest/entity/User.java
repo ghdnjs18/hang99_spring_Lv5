@@ -43,4 +43,8 @@ public class User {
     public void addCommentList(Comment comment) {
         this.commentList.add(comment);
     }
+
+    public void addBoardList(Board board) {
+        this.boardList.add(board);
+    }
 }
