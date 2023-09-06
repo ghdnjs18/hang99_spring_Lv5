@@ -23,7 +23,8 @@ public class Board extends Timestamped {
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
 
-
+    @Column(name="username",nullable = false)
+    private String username;
 
     @OneToMany
     @JoinColumn(name = "board_id")

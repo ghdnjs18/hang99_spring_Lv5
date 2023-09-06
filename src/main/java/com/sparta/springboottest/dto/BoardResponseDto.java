@@ -16,18 +16,16 @@ public class BoardResponseDto {
     private String contents;
     private LocalDateTime createdTime;
     private LocalDateTime modifiedTime;
-    private List<CommentResponseDto> commentList = new ArrayList<>();
+    private List<Comment> commentList;
 
     public BoardResponseDto(Board board) {
         this.id = board.getId();
         this.title = board.getTitle();
-        this.username = board.getUser().getUsername();
+        this.username = board.getUsername();
         this.contents = board.getContents();
         this.createdTime = board.getCreatedTime();
         this.modifiedTime = board.getModifiedTime();
+        this.commentList = board.getCommentList();
     }
 
-    public void setComment(CommentResponseDto comment) {
-        commentList.add(comment);
-    }
 }

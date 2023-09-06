@@ -58,36 +58,23 @@ public class BoardService {
     @Transactional
     public BoardResponseDto updateBoard(Long id, BoardRequestDto requestDto, String tokenValue) {
         Board board = findBoard(id);
-        String username = board.getUser().getUsername();
+        String username = tokenUsername(tokenValue);
 
-        if (!username.equals(tokenUsername(tokenValue))) {
-            if (findUser(tokenUsername(tokenValue)).getRole() == UserRoleEnum.ADMIN) {
-                board.update(requestDto);
-
-                return new BoardResponseDto(board);
-            }
+        if (!username.equals(board.getUsername()) && findUser(tokenUsername(tokenValue)).getRole() != UserRoleEnum.ADMIN) {
             throw new IllegalArgumentException("해당 게시물의 작성자만 수정할 수 있습니다.");
         }
         board.update(requestDto);
-
         return new BoardResponseDto(board);
     }
 
     public ResponseEntity<MessageResponseDto> deleteBoard(Long id, String tokenValue) {
         Board board = findBoard(id);
-        String username = board.getUser().getUsername();
-
+        String username = tokenUsername(tokenValue);
         MessageResponseDto message = new MessageResponseDto("게시물 삭제를 성공했습니다.", HttpStatus.OK.value());
-        if (!username.equals(tokenUsername(tokenValue))) {
-            if (findUser(tokenUsername(tokenValue)).getRole() == UserRoleEnum.ADMIN) {
-                boardRepository.delete(board);
-
-                return ResponseEntity.status(HttpStatus.OK).body(message);
-            }
+        if (!username.equals(board.getUsername()) && findUser(tokenUsername(tokenValue)).getRole() != UserRoleEnum.ADMIN) {
             throw new IllegalArgumentException("해당 게시물의 작성자만 삭제할 수 있습니다.");
         }
         boardRepository.delete(board);
-
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
