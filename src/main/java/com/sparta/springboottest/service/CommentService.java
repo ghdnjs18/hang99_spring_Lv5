@@ -34,7 +34,7 @@ public class CommentService {
         String username = tokenUsername(tokenValue);
         User user = findUser(username);
 
-        Comment comment = new Comment(requestDto, board, user);
+        Comment comment = new Comment(requestDto);
         commentRepository.save(comment);
 
         return new CommentResponseDto(comment);
@@ -43,18 +43,13 @@ public class CommentService {
     @Transactional
     public CommentResponseDto updateComment(Long id, CommentRequestDto requestDto, String tokenValue) {
         Comment comment = findComment(id);
-        String username = comment.getUser().getUsername();
+        String username = tokenUsername(tokenValue);
+        User user = findUser(tokenUsername(tokenValue));
 
-        if (!username.equals(tokenUsername(tokenValue))) {
-            if (findUser(tokenUsername(tokenValue)).getRole() == UserRoleEnum.ADMIN) {
-                comment.update(requestDto);
-
-                return new CommentResponseDto(comment);
-            }
+        if (!username.equals(comment.getUsername()) && user.getRole() != UserRoleEnum.ADMIN) {
             throw new IllegalArgumentException("해당 댓글의 작성자만 수정할 수 있습니다.");
         }
         comment.update(requestDto);
-
         return new CommentResponseDto(comment);
     }
 
