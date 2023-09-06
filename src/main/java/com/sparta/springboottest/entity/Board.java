@@ -23,17 +23,15 @@ public class Board extends Timestamped {
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
 
-    @ManyToOne
-    @JoinColumn(name = "username", nullable = false)
-    private User user;
 
-    @OneToMany(mappedBy = "board", cascade = {CascadeType.REMOVE})
+
+    @OneToMany
+    @JoinColumn(name = "board_id")
     private List<Comment> commentList = new ArrayList<>();
 
-    public Board(BoardRequestDto requestDto, User user) {
+    public Board(BoardRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.contents = requestDto.getContents();
-        this.user = user;
     }
 
     public void update(BoardRequestDto requestDto) {
@@ -43,7 +41,6 @@ public class Board extends Timestamped {
 
     public void addCommentList(Comment comment) {
         this.commentList.add(comment);
-        comment.setBoard(this);
     }
 
 }
