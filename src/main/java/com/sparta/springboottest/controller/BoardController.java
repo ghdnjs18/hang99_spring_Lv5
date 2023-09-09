@@ -35,8 +35,8 @@ public class BoardController {
     }
 
     @PutMapping("/board/{id}")
-    public BoardResponseDto updateBoard(@PathVariable Long id, @RequestBody BoardRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String tokenValue) {
-        return boardService.updateBoard(id, requestDto, tokenValue);
+    public BoardResponseDto updateBoard(@PathVariable Long id, @RequestBody BoardRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return boardService.updateBoard(id, requestDto, userDetails.getUser());
     }
 
     @DeleteMapping("/board/{id}")

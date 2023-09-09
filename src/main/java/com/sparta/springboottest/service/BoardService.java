@@ -59,11 +59,10 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponseDto updateBoard(Long id, BoardRequestDto requestDto, String tokenValue) {
+    public BoardResponseDto updateBoard(Long id, BoardRequestDto requestDto, User user) {
         Board board = findBoard(id);
-        String username = tokenUsername(tokenValue);
 
-        if (!username.equals(board.getUsername()) && findUser(tokenUsername(tokenValue)).getRole() != UserRoleEnum.ADMIN) {
+        if (!user.getUsername().equals(board.getUsername()) && user.getRole() != UserRoleEnum.ADMIN) {
             throw new IllegalArgumentException("해당 게시물의 작성자만 수정할 수 있습니다.");
         }
         board.update(requestDto);
