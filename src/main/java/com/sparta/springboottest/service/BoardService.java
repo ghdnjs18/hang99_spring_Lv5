@@ -8,11 +8,9 @@ import com.sparta.springboottest.entity.Board;
 import com.sparta.springboottest.entity.Comment;
 import com.sparta.springboottest.entity.User;
 import com.sparta.springboottest.entity.UserRoleEnum;
-import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.repository.BoardRepository;
 import com.sparta.springboottest.repository.CommentRepository;
 import com.sparta.springboottest.repository.UserRepository;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,13 +26,14 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
-    private final JwtUtil jwtUtil;
 
     public BoardResponseDto createBoard(BoardRequestDto requestDto, User user) {
         Board board = new Board(requestDto);
-        board.setUsername(user.getUsername());
+        String username = user.getUsername();
+        board.setUsername(username);
 
-        user.addBoardList(board);
+        User user_select = findUser(username);
+        user_select.addBoardList(board);
         boardRepository.save(board);
 
         return new BoardResponseDto(board);
@@ -97,18 +96,4 @@ public class BoardService {
                 new NullPointerException("해당 유저는 존재하지 않습니다.")
         );
     }
-
-    // 토큰에서 유저네임 가져오기
-    private String tokenUsername(String tokenValue) {
-        // JWT 토큰 substring
-        String token = jwtUtil.substringToken(tokenValue);
-        // 토큰 검증
-        if (!jwtUtil.validateToken(token)) {
-            throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
-        }
-        Claims info = jwtUtil.getUserInfoFromToken(token);
-
-        return info.getSubject();
-    }
-
 }

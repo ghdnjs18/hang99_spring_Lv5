@@ -27,10 +27,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String tokenValue = jwtUtil.getTokenFromRequest(request);
-        tokenValue = jwtUtil.substringToken(tokenValue);
 
         // 토큰이 null인지, 길이가 0인지, 공백이 포함 되어 있는지 확인
         if (StringUtils.hasText(tokenValue)) {
+            tokenValue = jwtUtil.substringToken(tokenValue);
             if (!jwtUtil.validateToken(tokenValue)) {
                 throw new IllegalArgumentException("유효하지 않는 토큰입니다.");
             }

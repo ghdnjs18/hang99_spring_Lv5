@@ -30,6 +30,7 @@ public class Board extends Timestamped {
 
     @OneToMany
     @JoinColumn(name = "board_id")
+    @OrderBy("modifiedTime desc")
     private List<Comment> commentList = new ArrayList<>();
 
     public Board(BoardRequestDto requestDto) {
