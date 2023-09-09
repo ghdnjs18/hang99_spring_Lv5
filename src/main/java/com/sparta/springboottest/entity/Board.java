@@ -28,10 +28,16 @@ public class Board extends Timestamped {
     @Column(name="username",nullable = false)
     private String username;
 
+    @Column(name = "boardlike", nullable = false)
+    private int like = 0;
+
     @OneToMany
     @JoinColumn(name = "board_id")
     @OrderBy("modifiedTime desc")
     private List<Comment> commentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board")
+    private List<BoardLike> boardLikeList = new ArrayList<>();
 
     public Board(BoardRequestDto requestDto) {
         this.title = requestDto.getTitle();
@@ -45,6 +51,11 @@ public class Board extends Timestamped {
 
     public void addCommentList(Comment comment) {
         this.commentList.add(comment);
+    }
+
+    public void addBoardLikeList(BoardLike boardLike) {
+        this.boardLikeList.add(boardLike);
+        boardLike.setBoard(this);
     }
 
 }

@@ -4,10 +4,8 @@ import com.sparta.springboottest.dto.BoardRequestDto;
 import com.sparta.springboottest.dto.BoardResponseDto;
 import com.sparta.springboottest.dto.ItemResponseDto;
 import com.sparta.springboottest.dto.MessageResponseDto;
-import com.sparta.springboottest.entity.Board;
-import com.sparta.springboottest.entity.Comment;
-import com.sparta.springboottest.entity.User;
-import com.sparta.springboottest.entity.UserRoleEnum;
+import com.sparta.springboottest.entity.*;
+import com.sparta.springboottest.repository.BoardLikeRepository;
 import com.sparta.springboottest.repository.BoardRepository;
 import com.sparta.springboottest.repository.CommentRepository;
 import com.sparta.springboottest.repository.UserRepository;
@@ -26,14 +24,15 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final BoardLikeRepository boardLikeRepository;
 
     public BoardResponseDto createBoard(BoardRequestDto requestDto, User user) {
         Board board = new Board(requestDto);
         String username = user.getUsername();
         board.setUsername(username);
 
-        User user_select = findUser(username);
-        user_select.addBoardList(board);
+        User userSelect = findUser(username);
+        userSelect.addBoardList(board);
         boardRepository.save(board);
 
         return new BoardResponseDto(board);
@@ -83,6 +82,31 @@ public class BoardService {
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
+    @Transactional
+    public ResponseEntity<MessageResponseDto> likeBoard(Long id, User user) {
+        Board board = findBoard(id);
+        User userSelect = findUser(user.getUsername());
+        BoardLike boardLike = boardLikeRepository.findByUser_IdAndBoard_Id(userSelect.getId(), id);
+
+        if (boardLike == null) {
+            boardLike = boardLikeRepository.save(new BoardLike(user, board));
+            board.addBoardLikeList(boardLike);
+        }
+
+        MessageResponseDto message;
+        if (boardLike.isCheck()) {
+            boardLike.setCheck(false);
+            board.setLike(board.getLike() + 1);
+            message = new MessageResponseDto("게시물 좋아요를 성공했습니다.", HttpStatus.OK.value());
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        }
+
+        boardLike.setCheck(true);
+        board.setLike(board.getLike() - 1);
+        message = new MessageResponseDto("게시물 좋아요를 취소했습니다.", HttpStatus.OK.value());
+        return ResponseEntity.status(HttpStatus.OK).body(message);
+    }
+
     // 게시물 검색
     private Board findBoard(Long id) {
         return boardRepository.findById(id).orElseThrow(() ->
@@ -96,4 +120,5 @@ public class BoardService {
                 new NullPointerException("해당 유저는 존재하지 않습니다.")
         );
     }
+
 }
