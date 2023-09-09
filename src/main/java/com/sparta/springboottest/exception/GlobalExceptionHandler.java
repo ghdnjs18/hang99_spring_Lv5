@@ -40,13 +40,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<MessageResponseDto> usernameNotFoundExceptionHandler(NullPointerException ex) {
+    public ResponseEntity<MessageResponseDto> usernameNotFoundExceptionHandler(UsernameNotFoundException ex) {
         MessageResponseDto message = new MessageResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<MessageResponseDto> runtimeExceptionHandler(NullPointerException ex) {
+    public ResponseEntity<MessageResponseDto> runtimeExceptionHandler(RuntimeException ex) {
         MessageResponseDto message = new MessageResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }

@@ -30,12 +30,10 @@ public class BoardService {
     private final CommentRepository commentRepository;
     private final JwtUtil jwtUtil;
 
-    public BoardResponseDto createBoard(BoardRequestDto requestDto, String tokenValue) {
-        String username = tokenUsername(tokenValue);
+    public BoardResponseDto createBoard(BoardRequestDto requestDto, User user) {
         Board board = new Board(requestDto);
-        board.setUsername(username);
+        board.setUsername(user.getUsername());
 
-        User user = findUser(username);
         user.addBoardList(board);
         boardRepository.save(board);
 
