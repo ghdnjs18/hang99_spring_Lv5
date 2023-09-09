@@ -46,12 +46,10 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponseDto updateComment(Long id, CommentRequestDto requestDto, String tokenValue) {
+    public CommentResponseDto updateComment(Long id, CommentRequestDto requestDto, User user) {
         Comment comment = findComment(id);
-        String username = tokenUsername(tokenValue);
-        User user = findUser(username);
 
-        if (!username.equals(comment.getUsername()) && user.getRole() != UserRoleEnum.ADMIN) {
+        if (!user.getUsername().equals(comment.getUsername()) && user.getRole() != UserRoleEnum.ADMIN) {
             throw new IllegalArgumentException("해당 댓글의 작성자만 수정할 수 있습니다.");
         }
         comment.update(requestDto);
