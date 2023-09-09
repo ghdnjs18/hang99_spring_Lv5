@@ -69,17 +69,15 @@ public class BoardService {
         return new BoardResponseDto(board);
     }
 
-    public ResponseEntity<MessageResponseDto> deleteBoard(Long id, String tokenValue) {
+    public ResponseEntity<MessageResponseDto> deleteBoard(Long id, User user) {
         Board board = findBoard(id);
-        String username = tokenUsername(tokenValue);
-        if (!username.equals(board.getUsername()) && findUser(tokenUsername(tokenValue)).getRole() != UserRoleEnum.ADMIN) {
+
+        if (!user.getUsername().equals(board.getUsername()) && user.getRole() != UserRoleEnum.ADMIN) {
             throw new IllegalArgumentException("해당 게시물의 작성자만 삭제할 수 있습니다.");
         }
 
         List<Comment> commentList = board.getCommentList();
-        for(Comment comment : commentList){
-            commentRepository.delete(comment);
-        }
+        commentRepository.deleteAll(commentList);
         boardRepository.delete(board);
 
         MessageResponseDto message = new MessageResponseDto("게시물 삭제를 성공했습니다.", HttpStatus.OK.value());
