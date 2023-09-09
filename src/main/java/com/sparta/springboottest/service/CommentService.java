@@ -56,12 +56,10 @@ public class CommentService {
         return new CommentResponseDto(comment);
     }
 
-    public ResponseEntity<MessageResponseDto> deleteComment(Long id, String tokenValue) {
+    public ResponseEntity<MessageResponseDto> deleteComment(Long id, User user) {
         Comment comment = findComment(id);
-        String username = tokenUsername(tokenValue);
-        User user = findUser(tokenUsername(tokenValue));
 
-        if (!username.equals(comment.getUsername()) && user.getRole() != UserRoleEnum.ADMIN) {
+        if (!user.getUsername().equals(comment.getUsername()) && user.getRole() != UserRoleEnum.ADMIN) {
             throw new IllegalArgumentException("해당 댓글의 작성자만 삭제할 수 있습니다.");
         }
 
