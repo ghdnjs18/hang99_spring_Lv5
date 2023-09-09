@@ -2,6 +2,8 @@ package com.sparta.springboottest.config;
 
 import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.security.JwtAuthenticationFilter;
+import com.sparta.springboottest.security.JwtAuthorizationFilter;
+import com.sparta.springboottest.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
 
     private final JwtUtil jwtUtil;
+    private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
 
     // 비밀번호 암호화
@@ -41,6 +44,12 @@ public class WebSecurityConfig {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
+    }
+
+    // 토큰 검증 필터
+    @Bean
+    public JwtAuthorizationFilter jwtAuthorizationFilter() {
+        return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
     }
 
     // 필터 연결
