@@ -9,8 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "board_Like")
-public class BoardLike {
+@Table(name = "comment_Like")
+public class CommentLike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,11 +24,11 @@ public class BoardLike {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id", nullable = false)
-    private Board board;
+    @JoinColumn(name = "comment_id", nullable = false)
+    private Comment comment;
 
-    public BoardLike(User user, Board board) {
+    public CommentLike(User user, Comment comment) {
         this.user = user;
-        this.board = board;
+        this.comment = comment;
     }
 }

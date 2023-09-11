@@ -3,7 +3,6 @@ package com.sparta.springboottest.controller;
 import com.sparta.springboottest.dto.CommentRequestDto;
 import com.sparta.springboottest.dto.CommentResponseDto;
 import com.sparta.springboottest.dto.MessageResponseDto;
-import com.sparta.springboottest.jwt.JwtUtil;
 import com.sparta.springboottest.security.UserDetailsImpl;
 import com.sparta.springboottest.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -31,5 +30,10 @@ public class CommentController {
     @DeleteMapping("/comment/{id}")
     public ResponseEntity<MessageResponseDto> deleteComment(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return commentService.deleteComment(id, userDetails.getUser());
+    }
+
+    @PutMapping("/comment/like/{id}")
+    public ResponseEntity<MessageResponseDto> likeComment(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentService.likeComment(id, userDetails.getUser());
     }
 }

@@ -33,7 +33,7 @@ public class Board extends Timestamped {
 
     @OneToMany
     @JoinColumn(name = "board_id")
-    @OrderBy("modifiedTime desc")
+    @OrderBy("createdTime desc")
     private List<Comment> commentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "board")

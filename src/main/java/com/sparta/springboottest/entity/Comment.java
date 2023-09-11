@@ -1,10 +1,14 @@
 package com.sparta.springboottest.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sparta.springboottest.dto.CommentRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,6 +26,12 @@ public class Comment extends Timestamped {
     @Column(name="username",nullable = false)
     private String username;
 
+    @Column(name = "commentlike", nullable = false)
+    private int like = 0;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "comment")
+    private List<CommentLike> commentLikeList = new ArrayList<>();
 
     public Comment(CommentRequestDto requestDto) {
         this.comment = requestDto.getComment();
@@ -29,5 +39,10 @@ public class Comment extends Timestamped {
 
     public void update(CommentRequestDto requestDto) {
         this.comment = requestDto.getComment();
+    }
+
+    public void addCommentLikeList(CommentLike commentLike) {
+        this.commentLikeList.add(commentLike);
+        commentLike.setComment(this);
     }
 }

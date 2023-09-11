@@ -41,7 +41,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public ItemResponseDto getBoards() {
         ItemResponseDto responseDto = new ItemResponseDto();
-        List<BoardResponseDto> list = boardRepository.findAllByOrderByModifiedTimeDesc().stream().map(BoardResponseDto::new).toList();
+        List<BoardResponseDto> list = boardRepository.findAllByOrderByCreatedTimeDesc().stream().map(BoardResponseDto::new).toList();
         for(BoardResponseDto boardResponseDto : list){
             responseDto.setBoard(boardResponseDto);
         }

@@ -13,6 +13,7 @@ public class BoardResponseDto {
     private String title;
     private String username;
     private String contents;
+    private int like;
     private LocalDateTime createdTime;
     private LocalDateTime modifiedTime;
     private List<Comment> commentList;
@@ -22,6 +23,7 @@ public class BoardResponseDto {
         this.title = board.getTitle();
         this.username = board.getUsername();
         this.contents = board.getContents();
+        this.like = board.getLike();
         this.createdTime = board.getCreatedTime();
         this.modifiedTime = board.getModifiedTime();
         this.commentList = board.getCommentList();
