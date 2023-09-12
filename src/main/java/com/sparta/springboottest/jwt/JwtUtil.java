@@ -30,7 +30,7 @@ public class JwtUtil {
     // 토큰의 앞에 붙이기 위해서 뒤에 공백을 써준어 구분한다.
     public static final String BEARER_PREFIX = "Bearer ";
     // 토큰 만료시간
-    private final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
+    private final long TOKEN_TIME = 60 * 60 * 1000L * 8; // 60분
 
     @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
     private String secretKey;

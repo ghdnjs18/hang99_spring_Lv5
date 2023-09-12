@@ -3,12 +3,14 @@ package com.sparta.springboottest.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "users")
 public class User {
@@ -25,6 +27,9 @@ public class User {
     @Column(name = "role", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
+
+    @Column(name = "user_use")
+    private boolean userUse = true;
 
     @OneToMany
     @JoinColumn(name = "user_id")

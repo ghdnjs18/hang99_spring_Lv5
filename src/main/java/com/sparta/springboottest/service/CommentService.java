@@ -52,6 +52,7 @@ public class CommentService {
         return new CommentResponseDto(comment);
     }
 
+    @Transactional
     public ResponseEntity<MessageResponseDto> deleteComment(Long id, User user) {
         Comment comment = findComment(id);
 
@@ -59,7 +60,8 @@ public class CommentService {
             throw new IllegalArgumentException("해당 댓글의 작성자만 삭제할 수 있습니다.");
         }
 
-        commentRepository.delete(comment);
+        comment.setCommentUse(false);
+
         MessageResponseDto message = new MessageResponseDto("게시물 삭제를 성공했습니다.", HttpStatus.OK.value());
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
@@ -90,19 +92,19 @@ public class CommentService {
     }
 
     private Comment findComment(Long id) {
-        return commentRepository.findById(id).orElseThrow(() ->
+        return commentRepository.findByIdAndCommentUseTrue(id).orElseThrow(() ->
                 new NullPointerException("선택한 댓글은 존재하지 않습니다.")
         );
     }
 
     private Board findBoard(Long id) {
-        return boardRepository.findById(id).orElseThrow(() ->
+        return boardRepository.findByIdAndBoardUseTrue(id).orElseThrow(() ->
                 new NullPointerException("선택한 게시물은 존재하지 않습니다.")
         );
     }
 
     private User findUser(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() ->
+        return userRepository.findByUsernameAndUserUseTrue(username).orElseThrow(() ->
                 new NullPointerException("해당 유저는 존재하지 않습니다.")
         );
     }

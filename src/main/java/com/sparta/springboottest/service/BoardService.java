@@ -74,9 +74,7 @@ public class BoardService {
             throw new IllegalArgumentException("해당 게시물의 작성자만 삭제할 수 있습니다.");
         }
 
-        List<Comment> commentList = board.getCommentList();
-        commentRepository.deleteAll(commentList);
-        boardRepository.delete(board);
+        board.setBoardUse(false);
 
         MessageResponseDto message = new MessageResponseDto("게시물 삭제를 성공했습니다.", HttpStatus.OK.value());
         return ResponseEntity.status(HttpStatus.OK).body(message);
@@ -109,14 +107,14 @@ public class BoardService {
 
     // 게시물 검색
     private Board findBoard(Long id) {
-        return boardRepository.findById(id).orElseThrow(() ->
+        return boardRepository.findByIdAndBoardUseTrue(id).orElseThrow(() ->
                 new NullPointerException("선택한 게시물은 존재하지 않습니다.")
         );
     }
 
     // 유저 검색
     private User findUser(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() ->
+        return userRepository.findByUsernameAndUserUseTrue(username).orElseThrow(() ->
                 new NullPointerException("해당 유저는 존재하지 않습니다.")
         );
     }
