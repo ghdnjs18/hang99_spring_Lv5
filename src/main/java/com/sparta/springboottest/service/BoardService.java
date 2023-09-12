@@ -41,7 +41,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public ItemResponseDto getBoards() {
         ItemResponseDto responseDto = new ItemResponseDto();
-        List<BoardResponseDto> list = boardRepository.findAllByOrderByCreatedTimeDesc().stream().map(BoardResponseDto::new).toList();
+        List<BoardResponseDto> list = boardRepository.findAllByBoardUseTrueOrderByCreatedTimeDesc().stream().map(BoardResponseDto::new).toList();
         for(BoardResponseDto boardResponseDto : list){
             responseDto.setBoard(boardResponseDto);
         }
@@ -96,13 +96,13 @@ public class BoardService {
         MessageResponseDto message;
         if (boardLike.isCheck()) {
             boardLike.setCheck(false);
-            board.setLike(board.getLike() + 1);
+            board.setBoardLike(board.getBoardLike() + 1);
             message = new MessageResponseDto("게시물 좋아요를 성공했습니다.", HttpStatus.OK.value());
             return ResponseEntity.status(HttpStatus.OK).body(message);
         }
 
         boardLike.setCheck(true);
-        board.setLike(board.getLike() - 1);
+        board.setBoardLike(board.getBoardLike() - 1);
         message = new MessageResponseDto("게시물 좋아요를 취소했습니다.", HttpStatus.OK.value());
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }

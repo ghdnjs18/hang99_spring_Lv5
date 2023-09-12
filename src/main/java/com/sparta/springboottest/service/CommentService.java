@@ -78,13 +78,13 @@ public class CommentService {
         MessageResponseDto message;
         if (commentLike.isCheck()) {
             commentLike.setCheck(false);
-            comment.setLike(comment.getLike() + 1);
+            comment.setCommentLike(comment.getCommentLike() + 1);
             message = new MessageResponseDto("게시물 좋아요를 성공했습니다.", HttpStatus.OK.value());
             return ResponseEntity.status(HttpStatus.OK).body(message);
         }
 
         commentLike.setCheck(true);
-        comment.setLike(comment.getLike() - 1);
+        comment.setCommentLike(comment.getCommentLike() - 1);
         message = new MessageResponseDto("게시물 좋아요를 취소했습니다.", HttpStatus.OK.value());
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }

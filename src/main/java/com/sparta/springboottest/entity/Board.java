@@ -29,7 +29,10 @@ public class Board extends Timestamped {
     private String username;
 
     @Column(name = "boardlike", nullable = false)
-    private int like = 0;
+    private int boardLike = 0;
+
+    @Column(name = "board_use", nullable = false)
+    private boolean boardUse = true;
 
     @OneToMany
     @JoinColumn(name = "board_id")

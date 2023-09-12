@@ -1,6 +1,7 @@
 package com.sparta.springboottest.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.springboottest.dto.CommentRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -27,9 +28,13 @@ public class Comment extends Timestamped {
     private String username;
 
     @Column(name = "commentlike", nullable = false)
-    private int like = 0;
+    private int commentLike = 0;
 
-    @JsonBackReference
+    @JsonIgnore
+    @Column(name = "comment_use", nullable = false)
+    private boolean commentUse = true;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "comment")
     private List<CommentLike> commentLikeList = new ArrayList<>();
 
