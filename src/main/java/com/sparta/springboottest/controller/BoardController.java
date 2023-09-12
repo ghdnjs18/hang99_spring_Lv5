@@ -7,6 +7,7 @@ import com.sparta.springboottest.dto.MessageResponseDto;
 import com.sparta.springboottest.security.UserDetailsImpl;
 import com.sparta.springboottest.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,12 @@ public class BoardController {
     }
 
     @GetMapping("/board")
-    public ItemResponseDto getBoards() {
-        return boardService.getBoards();
+    public Page<BoardResponseDto> getBoards(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @RequestParam("sortBy") String sortBy,
+            @RequestParam("isAsc") boolean isAsc) {
+        return boardService.getBoards(page-1, size, sortBy, isAsc);
     }
 
     @GetMapping("/board/{id}")

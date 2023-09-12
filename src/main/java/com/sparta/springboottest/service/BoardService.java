@@ -9,6 +9,10 @@ import com.sparta.springboottest.repository.BoardLikeRepository;
 import com.sparta.springboottest.repository.BoardRepository;
 import com.sparta.springboottest.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,14 +41,22 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public ItemResponseDto getBoards() {
-        ItemResponseDto responseDto = new ItemResponseDto();
-        List<BoardResponseDto> list = boardRepository.findAllByBoardUseTrueOrderByCreatedTimeDesc().stream().map(BoardResponseDto::new).toList();
+    public Page<BoardResponseDto> getBoards(int page, int size, String sortBy, boolean isAsc) {
+        // 페이지 정렬 선언
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+//        ItemResponseDto responseDto = new ItemResponseDto();
+//        List<BoardResponseDto> list = boardRepository.findAllByBoardUseTrueOrderByCreatedTimeDesc(pageable).stream().map(BoardResponseDto::new).toList();
+        Page<Board> pageList = boardRepository.findAllByBoardUseTrue(pageable);
+        Page<BoardResponseDto> list = pageList.map(BoardResponseDto::new);
         for(BoardResponseDto boardResponseDto : list){
             commentChange(boardResponseDto);
-            responseDto.setBoard(boardResponseDto);
+//            responseDto.setBoard(boardResponseDto);
         }
-        return responseDto;
+
+        return list;
     }
 
     @Transactional(readOnly = true)
