@@ -3,11 +3,13 @@ package com.sparta.springboottest.dto;
 import com.sparta.springboottest.entity.Board;
 import com.sparta.springboottest.entity.Comment;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
+@Setter
 public class BoardResponseDto {
     private Long id;
     private String title;

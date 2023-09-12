@@ -43,6 +43,7 @@ public class BoardService {
         ItemResponseDto responseDto = new ItemResponseDto();
         List<BoardResponseDto> list = boardRepository.findAllByBoardUseTrueOrderByCreatedTimeDesc().stream().map(BoardResponseDto::new).toList();
         for(BoardResponseDto boardResponseDto : list){
+            commentChange(boardResponseDto);
             responseDto.setBoard(boardResponseDto);
         }
         return responseDto;
@@ -52,6 +53,7 @@ public class BoardService {
     public BoardResponseDto getBoard(Long id) {
         Board board = findBoard(id);
         BoardResponseDto responseDto = new BoardResponseDto(board);
+        commentChange(responseDto);
 
         return responseDto;
     }
@@ -67,6 +69,7 @@ public class BoardService {
         return new BoardResponseDto(board);
     }
 
+    @Transactional
     public ResponseEntity<MessageResponseDto> deleteBoard(Long id, User user) {
         Board board = findBoard(id);
 
@@ -75,6 +78,9 @@ public class BoardService {
         }
 
         board.setBoardUse(false);
+        for (Comment comment : board.getCommentList()) {
+            comment.setCommentUse(false);
+        }
 
         MessageResponseDto message = new MessageResponseDto("게시물 삭제를 성공했습니다.", HttpStatus.OK.value());
         return ResponseEntity.status(HttpStatus.OK).body(message);
@@ -119,4 +125,13 @@ public class BoardService {
         );
     }
 
+    // 삭제된 댓글 응답
+    private void commentChange(BoardResponseDto boardResponseDto) {
+        for (Comment comment : boardResponseDto.getCommentList()) {
+            if (!comment.isCommentUse()) {
+                comment.setUsername("알수없음");
+                comment.setComment("삭제된 댓글입니다.");
+            }
+        }
+    }
 }
