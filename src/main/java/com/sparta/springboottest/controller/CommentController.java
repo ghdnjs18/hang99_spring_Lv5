@@ -17,9 +17,9 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping("/comment")
-    public CommentResponseDto createComment(@RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return commentService.createComment(requestDto, userDetails.getUser());
+    @PostMapping("/comment/{id}")
+    public CommentResponseDto createComment(@PathVariable Long id, @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentService.createComment(id, requestDto, userDetails.getUser());
     }
 
     @PutMapping("/comment/{id}")
@@ -35,5 +35,10 @@ public class CommentController {
     @PutMapping("/comment/like/{id}")
     public ResponseEntity<MessageResponseDto> likeComment(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return commentService.likeComment(id, userDetails.getUser());
+    }
+
+    @PostMapping("/comment/comment/{id}")
+    public CommentResponseDto createCommentComment(@PathVariable Long id, @RequestBody CommentRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentService.createCommentComment(id, requestDto, userDetails.getUser());
     }
 }

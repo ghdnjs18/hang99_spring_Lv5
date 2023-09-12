@@ -7,7 +7,6 @@ import com.sparta.springboottest.dto.MessageResponseDto;
 import com.sparta.springboottest.entity.*;
 import com.sparta.springboottest.repository.BoardLikeRepository;
 import com.sparta.springboottest.repository.BoardRepository;
-import com.sparta.springboottest.repository.CommentRepository;
 import com.sparta.springboottest.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +22,6 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
     private final BoardLikeRepository boardLikeRepository;
 
     public BoardResponseDto createBoard(BoardRequestDto requestDto, User user) {
@@ -128,9 +126,18 @@ public class BoardService {
     // 삭제된 댓글 응답
     private void commentChange(BoardResponseDto boardResponseDto) {
         for (Comment comment : boardResponseDto.getCommentList()) {
-            if (!comment.isCommentUse()) {
-                comment.setUsername("알수없음");
-                comment.setComment("삭제된 댓글입니다.");
+            commentSetChange(comment);
+        }
+    }
+
+    private void commentSetChange(Comment comment) {
+        if (!comment.isCommentUse()) {
+            comment.setUsername("알수없음");
+            comment.setComment("삭제된 댓글입니다.");
+        }
+        if (comment.getChildcommentList() != null) {
+            for (Comment comment1 : comment.getChildcommentList()) {
+                commentSetChange(comment1);
             }
         }
     }

@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,14 @@ public class Comment extends Timestamped {
     @OneToMany(mappedBy = "comment")
     private List<CommentLike> commentLikeList = new ArrayList<>();
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parentComment;
+
+    @OneToMany(mappedBy = "parentComment")
+    private List<Comment> ChildcommentList = new ArrayList<>();
+
     public Comment(CommentRequestDto requestDto) {
         this.comment = requestDto.getComment();
     }
@@ -49,5 +58,10 @@ public class Comment extends Timestamped {
     public void addCommentLikeList(CommentLike commentLike) {
         this.commentLikeList.add(commentLike);
         commentLike.setComment(this);
+    }
+
+    public void addCommentList(Comment comment) {
+        this.ChildcommentList.add(comment);
+        comment.setParentComment(this);
     }
 }

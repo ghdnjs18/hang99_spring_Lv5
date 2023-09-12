@@ -23,9 +23,8 @@ public class CommentService {
     private final UserRepository userRepository;
     private final CommentLikeRepository commentLikeRepository;
 
-    public CommentResponseDto createComment(CommentRequestDto requestDto, User user) {
-        Long boardId = requestDto.getBoardId();
-        Board board = findBoard(boardId);
+    public CommentResponseDto createComment(Long id, CommentRequestDto requestDto, User user) {
+        Board board = findBoard(id);
 
         String username = user.getUsername();
         User user_selcet = findUser(username);
@@ -89,6 +88,24 @@ public class CommentService {
         comment.setCommentLike(comment.getCommentLike() - 1);
         message = new MessageResponseDto("게시물 좋아요를 취소했습니다.", HttpStatus.OK.value());
         return ResponseEntity.status(HttpStatus.OK).body(message);
+    }
+
+    public CommentResponseDto createCommentComment(Long commentId, CommentRequestDto requestDto, User user) {
+        String username = user.getUsername();
+        User user_selcet = findUser(username);
+
+        Comment commentSelect = findComment(commentId);
+
+        Comment comment = new Comment(requestDto);
+        comment.setUsername(username);
+
+//        board.addCommentList(comment);
+        user_selcet.addCommentList(comment);
+        commentSelect.addCommentList(comment);
+
+        commentRepository.save(comment);
+
+        return new CommentResponseDto(commentSelect);
     }
 
     private Comment findComment(Long id) {

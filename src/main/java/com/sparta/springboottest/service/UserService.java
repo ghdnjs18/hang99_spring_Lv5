@@ -6,7 +6,6 @@ import com.sparta.springboottest.entity.Board;
 import com.sparta.springboottest.entity.Comment;
 import com.sparta.springboottest.entity.User;
 import com.sparta.springboottest.entity.UserRoleEnum;
-import com.sparta.springboottest.repository.BoardRepository;
 import com.sparta.springboottest.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,7 +21,6 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final BoardRepository boardRepository;
     private final PasswordEncoder passwordEncoder;
 
     // ADMIN_TOKEN
