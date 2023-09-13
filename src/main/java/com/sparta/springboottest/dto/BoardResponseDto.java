@@ -20,8 +20,8 @@ public class BoardResponseDto {
     private int boardLike;
     private LocalDateTime createdTime;
     private LocalDateTime modifiedTime;
-    private List<Comment> commentList;
     private Category category;
+    private List<Comment> commentList;
 
     public BoardResponseDto(Board board) {
         this.id = board.getId();
@@ -31,7 +31,7 @@ public class BoardResponseDto {
         this.boardLike = board.getBoardLike();
         this.createdTime = board.getCreatedTime();
         this.modifiedTime = board.getModifiedTime();
-        this.commentList = board.getCommentList();
         this.category = board.getCategory();
+        this.commentList = board.getCommentList();
     }
 }
