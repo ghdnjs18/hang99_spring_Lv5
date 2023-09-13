@@ -3,27 +3,30 @@ package com.sparta.springboottest.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.springboottest.dto.LoginRequestDto;
 import com.sparta.springboottest.dto.MessageResponseDto;
+import com.sparta.springboottest.entity.RefreshToken;
 import com.sparta.springboottest.entity.UserRoleEnum;
 import com.sparta.springboottest.jwt.JwtUtil;
+import com.sparta.springboottest.repository.RefreshTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private final JwtUtil jwtUtil;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    private final JwtUtil jwtUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
+
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, RefreshTokenRepository refreshTokenRepository) {
         this.jwtUtil = jwtUtil;
+        this.refreshTokenRepository = refreshTokenRepository;
         // 로그인 요청 URI 정의
         setFilterProcessesUrl("/api/user/login");
     }
@@ -53,8 +56,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String username = ((UserDetailsImpl)authResult.getPrincipal()).getUsername();
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
 
-        String token = jwtUtil.createToken(username, role);
-        jwtUtil.addJwtToCookie(token, response);
+        String accessToken = jwtUtil.createAccessToken(username, role);
+        jwtUtil.addJwtToCookie(accessToken, response);
+
+        RefreshToken refreshToken = refreshTokenRepository.findByUsername(username).orElse(null);
+        String refresh = jwtUtil.createRefreshToken(username, role);
+        if (refreshToken == null) {
+            refreshToken = new RefreshToken(refresh, username);
+        } else {
+            refreshToken.updateToken(refresh);
+        }
+        refreshTokenRepository.save(refreshToken);
+        response.addHeader("Refresh_Token", refreshToken.getToken());
 
         response.setContentType("application/json; charset=UTF-8");
         MessageResponseDto message = new MessageResponseDto("로그인 성공했습니다.", HttpStatus.OK.value());
