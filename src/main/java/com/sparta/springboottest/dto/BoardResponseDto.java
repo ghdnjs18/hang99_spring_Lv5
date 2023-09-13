@@ -1,11 +1,13 @@
 package com.sparta.springboottest.dto;
 
 import com.sparta.springboottest.entity.Board;
+import com.sparta.springboottest.entity.Category;
 import com.sparta.springboottest.entity.Comment;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -18,6 +20,7 @@ public class BoardResponseDto {
     private int boardLike;
     private LocalDateTime createdTime;
     private LocalDateTime modifiedTime;
+    private Category category;
     private List<Comment> commentList;
 
     public BoardResponseDto(Board board) {
@@ -28,7 +31,7 @@ public class BoardResponseDto {
         this.boardLike = board.getBoardLike();
         this.createdTime = board.getCreatedTime();
         this.modifiedTime = board.getModifiedTime();
+        this.category = board.getCategory();
         this.commentList = board.getCommentList();
     }
-
 }
