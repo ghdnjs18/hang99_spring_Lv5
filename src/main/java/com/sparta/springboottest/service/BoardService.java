@@ -2,11 +2,11 @@ package com.sparta.springboottest.service;
 
 import com.sparta.springboottest.dto.BoardRequestDto;
 import com.sparta.springboottest.dto.BoardResponseDto;
-import com.sparta.springboottest.dto.ItemResponseDto;
 import com.sparta.springboottest.dto.MessageResponseDto;
 import com.sparta.springboottest.entity.*;
 import com.sparta.springboottest.repository.BoardLikeRepository;
 import com.sparta.springboottest.repository.BoardRepository;
+import com.sparta.springboottest.repository.CategoryRepository;
 import com.sparta.springboottest.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,8 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -27,11 +25,15 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final BoardLikeRepository boardLikeRepository;
+    private final CategoryRepository categoryRepository;
 
     public BoardResponseDto createBoard(BoardRequestDto requestDto, User user) {
         Board board = new Board(requestDto);
         String username = user.getUsername();
         board.setUsername(username);
+
+        Category category = findCategory(requestDto.getCategoryId());
+        category.addBoardList(board);
 
         User userSelect = findUser(username);
         userSelect.addBoardList(board);
@@ -47,16 +49,12 @@ public class BoardService {
         Sort sort = Sort.by(direction, sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-//        ItemResponseDto responseDto = new ItemResponseDto();
-//        List<BoardResponseDto> list = boardRepository.findAllByBoardUseTrueOrderByCreatedTimeDesc(pageable).stream().map(BoardResponseDto::new).toList();
-        Page<Board> pageList = boardRepository.findAllByBoardUseTrue(pageable);
-        Page<BoardResponseDto> list = pageList.map(BoardResponseDto::new);
-        for(BoardResponseDto boardResponseDto : list){
+        Page<BoardResponseDto> pageList = boardRepository.findAllByBoardUseTrue(pageable).map(BoardResponseDto::new);
+        for(BoardResponseDto boardResponseDto : pageList){
             commentChange(boardResponseDto);
-//            responseDto.setBoard(boardResponseDto);
         }
 
-        return list;
+        return pageList;
     }
 
     @Transactional(readOnly = true)
@@ -135,6 +133,13 @@ public class BoardService {
         );
     }
 
+    // 카테고리 검색
+    private Category findCategory(Long id) {
+        return categoryRepository.findById(id).orElseThrow(() ->
+                new NullPointerException("해당 카테고리는 존재하지 않습니다.")
+        );
+    }
+
     // 삭제된 댓글 응답
     private void commentChange(BoardResponseDto boardResponseDto) {
         for (Comment comment : boardResponseDto.getCommentList()) {
@@ -142,6 +147,7 @@ public class BoardService {
         }
     }
 
+    // 대댓글 삭제 확인
     private void commentSetChange(Comment comment) {
         if (!comment.isCommentUse()) {
             comment.setUsername("알수없음");

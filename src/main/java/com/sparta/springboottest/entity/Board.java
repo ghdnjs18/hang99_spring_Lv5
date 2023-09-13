@@ -42,6 +42,9 @@ public class Board extends Timestamped {
     @OneToMany(mappedBy = "board")
     private List<BoardLike> boardLikeList = new ArrayList<>();
 
+    @ManyToOne
+    private Category category;
+
     public Board(BoardRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.contents = requestDto.getContents();
